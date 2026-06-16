@@ -1,0 +1,64 @@
+name: build
+
+# Build the image and roll it out via GitOps.
+#
+# On a push to main this builds ONE image (the Astro site embedded in the Go
+# binary), pushes it to the in-cluster Gitea registry, then writes the new image
+# tag into the homelab config repo. ArgoCD reconciles from there.
+#
+# Runs on the in-cluster act_runner (runs-on: ubuntu-latest, single job). The
+# build is light enough to stay local — no GitHub-hosted offload needed.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+env:
+  REGISTRY: git.henrydowd.dev
+  IMAGE: git.henrydowd.dev/henry/portfolio
+  CONFIG_REPO: git.henrydowd.dev/henry/homelab
+  DEPLOYMENT: k8s/apps/portfolio/deployment.yaml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve image tag
+        id: tag
+        run: echo "sha=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to the Gitea registry
+        # CI_TOKEN is a Gitea PAT with packages:write AND write access to
+        # henry/homelab. Add it under this repo's Settings -> Actions -> Secrets.
+        run: |
+          echo "${{ secrets.CI_TOKEN }}" \
+            | docker login "$REGISTRY" -u "${{ github.repository_owner }}" --password-stdin
+
+      - name: Build and push image
+        run: |
+          docker build \
+            --build-arg VERSION="${{ steps.tag.outputs.sha }}" \
+            --build-arg COMMIT="${GITHUB_SHA}" \
+            -t "$IMAGE:${{ steps.tag.outputs.sha }}" \
+            -t "$IMAGE:latest" \
+            .
+          docker push "$IMAGE:${{ steps.tag.outputs.sha }}"
+          docker push "$IMAGE:latest"
+
+      - name: Bump image tag in the homelab config repo
+        run: |
+          git clone "https://oauth2:${{ secrets.CI_TOKEN }}@${CONFIG_REPO}.git" config
+          cd config
+          sed -i -E "s|(image: ${IMAGE}:).*|\1${{ steps.tag.outputs.sha }}|" "$DEPLOYMENT"
+          if git diff --quiet; then
+            echo "image tag unchanged; nothing to commit"
+            exit 0
+          fi
+          git config user.name  "portfolio-ci"
+          git config user.email "ci@henrydowd.dev"
+          git commit -am "portfolio: deploy ${{ steps.tag.outputs.sha }}"
+          git push

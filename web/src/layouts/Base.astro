@@ -1,0 +1,52 @@
+---
+/**
+ * Base layout: the HTML shell shared by every page — metadata, social tags,
+ * global styles, and the site footer. Pages render their content into the slot.
+ */
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Henry Dowd — Platform / DevOps / SRE',
+  description =
+    'Platform and SRE engineer. This site is served by a single Go binary on a self-hosted Kubernetes cluster, with live telemetry from that same cluster.',
+} = Astro.props;
+
+const year = new Date().getFullYear();
+
+// Canonical / OG URL for the current page (Astro.site is set in astro.config.mjs).
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Social / Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonicalURL} />
+  </head>
+  <body>
+    <main>
+      <slot />
+    </main>
+    <footer class="footer">
+      <span>© {year} Henry Dowd</span>
+      <span>served by one Go binary · self-hosted on k3s</span>
+    </footer>
+  </body>
+</html>
