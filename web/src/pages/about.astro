@@ -1,0 +1,36 @@
+---
+/**
+ * About page. Replace the placeholder prose with your own.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="About — Henry Dowd">
+  <article class="prose">
+    <p class="kicker">About</p>
+    <h1>About</h1>
+
+    <p class="note">
+      Placeholder copy — replace with your story. A few short paragraphs work
+      better here than a wall of text.
+    </p>
+
+    <p>
+      I'm a platform / SRE engineer focused on running real systems well:
+      GitOps-driven Kubernetes, self-hosted CI/CD, and observability that
+      actually catches things. The homelab behind this page is where I prove
+      those ideas out end to end.
+    </p>
+
+    <h2>What this site is</h2>
+    <p>
+      A single static Go binary that embeds this front-end and serves a small
+      live API. It reads cluster metrics from VictoriaMetrics and recent commits
+      from Gitea over the cluster-internal network, exposes its own Prometheus
+      metrics, and is deployed by the same ArgoCD pipeline as every other
+      service — so it monitors the platform that runs it.
+    </p>
+
+    <p><a href="/">← Back home</a></p>
+  </article>
+</Base>

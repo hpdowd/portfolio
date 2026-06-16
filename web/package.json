@@ -1,0 +1,17 @@
+{
+  "name": "portfolio-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Static front-end for the portfolio site; built and embedded into the Go binary.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "postbuild": "node -e \"const fs=require('fs');fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/.gitkeep','')\"",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  }
+}

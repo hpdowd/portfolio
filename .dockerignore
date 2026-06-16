@@ -1,0 +1,10 @@
+# Keep the build context small and deterministic. node_modules and the local
+# web/dist are rebuilt inside the image; .git and build outputs are never needed.
+.git
+.gitea
+**/node_modules
+/web/dist
+/portfolio
+/out
+*.test
+README.md

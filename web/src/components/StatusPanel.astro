@@ -1,0 +1,71 @@
+---
+/**
+ * Live homelab status strip.
+ *
+ * The markup is rendered at build time (static); the inline script hydrates it
+ * from /api/status and refreshes on an interval. No client framework — just a
+ * small typed script. The backend's own uptime always shows; the cluster tiles
+ * populate when VictoriaMetrics is reachable, and fall back gracefully when not.
+ */
+---
+
+<section class="status" aria-label="Live homelab status">
+  <div class="status__head">
+    <span class="dot" data-dot aria-hidden="true"></span>
+    <h2>Homelab — live</h2>
+    <span class="status__meta" data-meta>connecting…</span>
+  </div>
+  <div class="tiles">
+    <article class="tile"><span class="tile__v" data-targets>—</span><span class="tile__l">targets up</span></article>
+    <article class="tile"><span class="tile__v" data-alerts>—</span><span class="tile__l">alerts firing</span></article>
+    <article class="tile"><span class="tile__v" data-rate>—</span><span class="tile__l">req/s · this service</span></article>
+    <article class="tile"><span class="tile__v" data-uptime>—</span><span class="tile__l">backend uptime</span></article>
+  </div>
+</section>
+
+<script>
+  import { getStatus } from '../lib/api';
+
+  // Refresh cadence. The backend caches upstream calls, so polling here is cheap.
+  const INTERVAL_MS = 5000;
+
+  const el = (sel: string) => document.querySelector<HTMLElement>(sel)!;
+
+  function fmtUptime(seconds: number): string {
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    if (d > 0) return `${d}d ${h}h`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+  }
+
+  async function tick(): Promise<void> {
+    const meta = el('[data-meta]');
+    const dot = el('[data-dot]');
+    const data = await getStatus();
+
+    if (!data) {
+      meta.textContent = 'unavailable';
+      dot.className = 'dot dot--err';
+      return;
+    }
+
+    el('[data-uptime]').textContent = fmtUptime(data.service.uptime_seconds);
+
+    if (data.live && data.cluster) {
+      el('[data-targets]').textContent = `${data.cluster.targets_up}/${data.cluster.targets_total}`;
+      el('[data-alerts]').textContent = String(data.cluster.alerts_firing);
+      el('[data-rate]').textContent = data.cluster.request_rate.toFixed(2);
+      dot.className = data.cluster.alerts_firing > 0 ? 'dot dot--warn' : 'dot dot--ok';
+      meta.textContent = `live · ${new Date().toLocaleTimeString()}`;
+    } else {
+      // Backend is up (we got a response) but the metrics upstream isn't ready.
+      dot.className = 'dot dot--warn';
+      meta.textContent = 'backend up · cluster data pending';
+    }
+  }
+
+  void tick();
+  setInterval(() => void tick(), INTERVAL_MS);
+</script>

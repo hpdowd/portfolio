@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Terminal prompt">
+  <rect width="64" height="64" rx="14" fill="#2f5d50"/>
+  <path d="M18 23 l11 9 -11 9" fill="none" stroke="#faf9f6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="33" y1="41" x2="47" y2="41" stroke="#faf9f6" stroke-width="5" stroke-linecap="round"/>
+</svg>

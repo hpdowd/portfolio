@@ -1,0 +1,63 @@
+---
+/**
+ * Live commit feed from the (public) homelab repository.
+ *
+ * The shell is server-rendered; the inline script fills it from /api/git. The
+ * backend reads the public repo anonymously and returns only a curated subset
+ * (short SHA, first message line, author, time). Values are still
+ * HTML-escaped here before insertion — defence in depth against anything odd in
+ * a commit message.
+ */
+---
+
+<section class="git" aria-label="Recent homelab commits">
+  <h2>Recent homelab activity</h2>
+  <ol class="commits" data-commits>
+    <li class="commits__empty">loading…</li>
+  </ol>
+</section>
+
+<script>
+  import { getGit } from '../lib/api';
+
+  function relativeTime(iso: string): string {
+    const seconds = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (seconds < 3600) return `${Math.max(1, Math.floor(seconds / 60))}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  }
+
+  function escapeHtml(s: string): string {
+    const map: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    };
+    return s.replace(/[&<>"']/g, (c) => map[c]);
+  }
+
+  async function load(): Promise<void> {
+    const list = document.querySelector<HTMLElement>('[data-commits]')!;
+    const data = await getGit();
+
+    if (!data || data.commits.length === 0) {
+      list.innerHTML = '<li class="commits__empty">activity unavailable</li>';
+      return;
+    }
+
+    list.innerHTML = data.commits
+      .map(
+        (c) => `
+          <li class="commit">
+            <a class="commit__sha" href="${encodeURI(c.url)}" target="_blank" rel="noopener">${escapeHtml(c.sha)}</a>
+            <span class="commit__msg">${escapeHtml(c.summary)}</span>
+            <span class="commit__meta">${escapeHtml(c.author)} · ${relativeTime(c.when)}</span>
+          </li>`,
+      )
+      .join('');
+  }
+
+  void load();
+</script>

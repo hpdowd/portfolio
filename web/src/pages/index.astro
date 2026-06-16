@@ -1,0 +1,31 @@
+---
+/**
+ * Home page: hero + the two live panels.
+ *
+ * The copy below is a starting point — edit the lede and links to taste.
+ */
+import Base from '../layouts/Base.astro';
+import StatusPanel from '../components/StatusPanel.astro';
+import GitActivity from '../components/GitActivity.astro';
+---
+
+<Base>
+  <header class="hero">
+    <p class="kicker">Platform · DevOps · SRE</p>
+    <h1>Henry Dowd</h1>
+    <p class="lede">
+      I build and operate self-hosted platforms. This site is served by a single
+      Go binary running on my own Kubernetes cluster — and the panel below is
+      live telemetry from that very cluster, scraped from the same monitoring
+      stack this service reports into.
+    </p>
+    <nav class="links" aria-label="Primary">
+      <a href="/cv/">CV</a>
+      <a href="/about/">About</a>
+      <a href="https://git.henrydowd.dev/henry/portfolio" target="_blank" rel="noopener">Source</a>
+    </nav>
+  </header>
+
+  <StatusPanel />
+  <GitActivity />
+</Base>
