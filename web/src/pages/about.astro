@@ -1,36 +1,65 @@
 ---
 /**
- * About page. Replace the placeholder prose with your own.
+ * About — short, human intro grounded in the CV facts, plus a colophon for how
+ * the site works. Same type system as the home/CV. The personal narrative is a
+ * starting point; edit it to sound like you.
  */
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="About — Henry Dowd">
-  <article class="prose">
-    <p class="kicker">About</p>
+<Base
+  title="About — Henry Dowd"
+  description="A bit about Henry Dowd — final-year Maths & Computer Science student at Maynooth, and how this self-hosted site is built."
+>
+  <article class="about">
+    <a class="about__back" href="/">← Home</a>
     <h1>About</h1>
 
-    <p class="note">
-      Placeholder copy — replace with your story. A few short paragraphs work
-      better here than a wall of text.
+    <p class="lede">
+      I'm a final-year Maths and Computer Science student at Maynooth, graduating in
+      2026 — and I got into infrastructure the long way round, by running my own.
     </p>
 
     <p>
-      I'm a platform / SRE engineer focused on running real systems well:
-      GitOps-driven Kubernetes, self-hosted CI/CD, and observability that
-      actually catches things. The homelab behind this page is where I prove
-      those ideas out end to end.
+      The homelab behind this site started small and turned into a two-node Kubernetes
+      cluster I manage entirely from a git repository: monitoring, backups, ingress, DNS,
+      the lot. Most of what I know about keeping systems alive, I learned by keeping that
+      one alive.
     </p>
 
-    <h2>What this site is</h2>
     <p>
-      A single static Go binary that embeds this front-end and serves a small
-      live API. It reads cluster metrics from VictoriaMetrics and recent commits
-      from Gitea over the cluster-internal network, exposes its own Prometheus
-      metrics, and is deployed by the same ArgoCD pipeline as every other
-      service — so it monitors the platform that runs it.
+      I like the parts other people find tedious — making deploys boring, writing down why
+      a decision was made, noticing a problem in a graph before it turns into an email.
+      I'm looking for a graduate role where that's the actual job: platform, DevOps, SRE,
+      or systems administration.
     </p>
 
-    <p><a href="/">← Back home</a></p>
+    <h2>How this site works</h2>
+    <p>
+      This page is served by a single Go binary I wrote, running on that same cluster. It
+      reads live metrics from the monitoring stack and recent commits from my git server
+      over the internal network, exposes its own metrics, and is scraped by the very system
+      it reports on — a small, honest demo of the thing it's describing. The source is on
+      <a href="https://github.com/hpdowd/portfolio" target="_blank" rel="noopener">GitHub</a>.
+    </p>
   </article>
 </Base>
+
+<style>
+  .about { font-family: var(--sans); max-width: 42rem; }
+  .about__back { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft); text-decoration: none; }
+  .about__back:hover { color: var(--accent); }
+  .about h1 { font-size: clamp(2.4rem, 6vw, 3.2rem); margin: 0.7rem 0 1.25rem; letter-spacing: -0.02em; }
+  .about .lede {
+    font-family: var(--serif); font-size: clamp(1.3rem, 2.6vw, 1.6rem);
+    line-height: 1.45; color: var(--ink); margin: 0 0 1.5rem;
+  }
+  .about h2 {
+    font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+    margin: 2.25rem 0 1rem; padding-top: 1.75rem; border-top: 1px solid var(--line);
+  }
+  .about p { line-height: 1.65; margin: 0 0 1.1rem; }
+  .about a:not(.about__back) { color: var(--accent); text-underline-offset: 3px; }
+  .about :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
