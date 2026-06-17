@@ -55,6 +55,7 @@ Gitea directly.
 .
 ├── main.go                 entrypoint: the two listeners + graceful shutdown
 ├── web.go                  //go:embed of the built site + static handler
+├── security.go             security headers + strict CSP on the public listener
 ├── go.mod                  module (no dependencies)
 ├── internal/
 │   ├── config/             environment-driven configuration
@@ -64,11 +65,12 @@ Gitea directly.
 │   ├── gitea/              Gitea client (anonymous public-repo reads)
 │   └── api/                /api/status and /api/git handlers
 ├── web/                    Astro front-end (static; built into web/dist)
-│   ├── src/                layouts, components (StatusPanel, GitActivity), pages, lib
-│   ├── public/             favicon, and an optional resume.pdf
+│   ├── src/                Base layout, Home.astro, cv/about pages, global styles
+│   ├── public/             favicon, home.js (live wiring), resume.pdf
 │   └── dist/               build output — embedded into the binary (git-ignored)
+├── docs/design.md          design rationale: anti-AI-aesthetic research + decisions
 ├── Dockerfile              3-stage: build site → build binary → distroless
-└── .github/workflows/       build.yml — CI: build on GitHub, push to GHCR, deploy
+└── .github/workflows/       build.yml — CI: test → build on GitHub → push GHCR → deploy
 ```
 
 ## Local development
@@ -139,6 +141,25 @@ Exposed at `:9090/metrics` (hand-written exposition; see `internal/metrics`):
 - `go_goroutines`
 
 Routes are folded into a small fixed set of labels to keep cardinality bounded.
+
+## Security headers & tests
+
+Every response on the public `:8080` listener carries a strict
+`Content-Security-Policy` — same-origin `script-src` / `style-src` with no
+`unsafe-inline`, which is why all CSS and JS are external same-origin files (Astro
+builds with `inlineStylesheets: 'never'` and the live script is served from
+`/home.js`) — plus `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`,
+`Permissions-Policy`, and HSTS. The private `:9090` listener is deliberately left
+bare. See `security.go`.
+
+The pure logic is unit-tested with `go test ./...`: the VictoriaMetrics scalar
+parser, the Gitea commit curation, the metrics exposition format, the cache's
+stale-while-revalidate behaviour, and the security headers. CI runs the tests as
+a gate before the image is built.
+
+The front-end's visual direction (a Swiss/editorial, Gruvbox-themed layout that
+deliberately avoids the generic "AI-generated" aesthetic) is documented in
+[`docs/design.md`](docs/design.md).
 
 ## Build & deploy (CI/CD)
 
