@@ -1,0 +1,66 @@
+name: build
+
+# Build the container image on a cloud runner and deploy it via GitOps.
+#
+# The in-cluster Gitea act_runner has no Docker daemon (it was only ever wired
+# for kubeconform), so it can't build images. Following the NextKeep pattern,
+# the canonical repo on Gitea (git.henrydowd.dev/henry/portfolio) is push-
+# mirrored to GitHub and the build runs on GitHub's free hosted runners, which
+# do have Docker. The image is published to GHCR (public) so the cluster pulls
+# it anonymously — exactly like it pulls Immich from ghcr.io.
+#
+# Gitea Actions also reads .github/workflows/, so the in-cluster runner would
+# otherwise pick this up too; the job-level `if` skips it everywhere but github.com.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.server_url == 'https://github.com'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write          # push to GHCR with the built-in GITHUB_TOKEN
+    env:
+      IMAGE: ghcr.io/friedrice04/portfolio
+      # Optional: a Gitea PAT with write access to henry/homelab, added as the
+      # repo secret HOMELAB_TOKEN. When present, CI pins the new image SHA in the
+      # config repo (full GitOps). When absent, the image is still built and
+      # pushed (:latest moves); the homelab deployment.yaml is bumped by hand.
+      HOMELAB_TOKEN: ${{ secrets.HOMELAB_TOKEN }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Resolve image tag
+        id: tag
+        run: echo "sha=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push image
+        run: |
+          docker build \
+            --build-arg VERSION="${{ steps.tag.outputs.sha }}" \
+            --build-arg COMMIT="${GITHUB_SHA}" \
+            -t "$IMAGE:${{ steps.tag.outputs.sha }}" \
+            -t "$IMAGE:latest" \
+            .
+          docker push "$IMAGE:${{ steps.tag.outputs.sha }}"
+          docker push "$IMAGE:latest"
+
+      - name: Pin the image SHA in the homelab config repo
+        if: env.HOMELAB_TOKEN != ''
+        run: |
+          git clone "https://oauth2:${HOMELAB_TOKEN}@git.henrydowd.dev/henry/homelab.git" config
+          cd config
+          sed -i -E "s|(image: ${IMAGE}:).*|\1${{ steps.tag.outputs.sha }}|" k8s/apps/portfolio/deployment.yaml
+          if git diff --quiet; then echo "image tag unchanged; nothing to commit"; exit 0; fi
+          git config user.name  "portfolio-ci"
+          git config user.email "ci@henrydowd.dev"
+          git commit -am "portfolio: deploy ${{ steps.tag.outputs.sha }}"
+          git push
