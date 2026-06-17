@@ -142,25 +142,30 @@ Routes are folded into a small fixed set of labels to keep cardinality bounded.
 
 ## Build & deploy (CI/CD)
 
-On a push to `main`, `.gitea/workflows/build.yaml` runs on the in-cluster
-act_runner and:
+The in-cluster Gitea runner has no Docker daemon, so the image is **built on
+GitHub's free hosted runners** — the same pattern NextKeep uses for its Android
+build. The canonical repo on Gitea is push-mirrored to GitHub, and
+`.github/workflows/build.yml` runs there on a push to `main`:
 
 1. builds one image (Astro site embedded in the Go binary),
-2. pushes it to the Gitea registry as `git.henrydowd.dev/henry/portfolio:<sha>`,
-3. writes that `<sha>` into `k8s/apps/portfolio/deployment.yaml` in the homelab
-   repo.
+2. pushes it to **GHCR** as `ghcr.io/friedrice04/portfolio:<sha>` (and `:latest`),
+3. if the `HOMELAB_TOKEN` secret is set, pins that `<sha>` into
+   `k8s/apps/portfolio/deployment.yaml` in the homelab repo.
 
-ArgoCD, watching the homelab repo, then rolls out the new image.
+ArgoCD, watching the homelab repo, then rolls out the new image. The cluster
+pulls from `ghcr.io` anonymously — exactly like it pulls Immich, no
+`imagePullSecret`.
 
 **Required once:**
 
-- A Gitea PAT in this repo's Actions secrets as **`CI_TOKEN`**, with
-  `packages:write` **and** write access to `henry/homelab`.
-- The package/registry visibility set to **public** (so the cluster pulls the
-  image without an `imagePullSecret`).
-- The deployment manifests added to the homelab repo under
-  `k8s/apps/portfolio/` plus the paired `k8s/apps/portfolio.yaml` ArgoCD
-  Application. See the build plan for the exact manifests.
+- The Gitea → GitHub **push mirror** for this repo (so pushes reach GitHub).
+- The GHCR package `portfolio` set to **public** after the first build
+  (GitHub → your profile → Packages → portfolio → change visibility).
+- For full GitOps, a Gitea PAT with write access to `henry/homelab` as the
+  GitHub Actions secret **`HOMELAB_TOKEN`**. Without it the image still builds
+  and `:latest` moves; the homelab tag is just bumped by hand.
+- The deployment manifests in the homelab repo under `k8s/apps/portfolio/` plus
+  the paired `k8s/apps/portfolio.yaml` Application.
 
-The image is reproducible and pins the running version to a git SHA in the
-config repo — revert that commit to roll back.
+GHCR pushes use the built-in `GITHUB_TOKEN` — no PAT needed for the registry.
+Roll back by reverting the homelab commit.
