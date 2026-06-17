@@ -148,7 +148,7 @@ build. The canonical repo on Gitea is push-mirrored to GitHub, and
 `.github/workflows/build.yml` runs there on a push to `main`:
 
 1. builds one image (Astro site embedded in the Go binary),
-2. pushes it to **GHCR** as `ghcr.io/friedrice04/portfolio:<sha>` (and `:latest`),
+2. pushes it to **GHCR** as `ghcr.io/hpdowd/portfolio:<sha>` (and `:latest`),
 3. if the `HOMELAB_TOKEN` secret is set, pins that `<sha>` into
    `k8s/apps/portfolio/deployment.yaml` in the homelab repo.
 
