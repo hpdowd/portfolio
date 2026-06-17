@@ -66,8 +66,10 @@ func main() {
 	public.Handle("/", staticHandler())
 
 	publicServer := &http.Server{
-		Addr:              cfg.Addr,
-		Handler:           m.Middleware(public),
+		Addr: cfg.Addr,
+		// Security headers wrap the instrumented public mux. The private metrics
+		// listener below is deliberately left without them.
+		Handler:           securityHeaders(m.Middleware(public)),
 		ReadHeaderTimeout: 5 * time.Second, // basic slow-loris protection
 	}
 
