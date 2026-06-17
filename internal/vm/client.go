@@ -51,8 +51,14 @@ func (c *Client) Fetch(ctx context.Context) (Snapshot, error) {
 	if s.TargetsTotal, err = c.scalarInt(ctx, "count(up)"); err != nil {
 		return s, err
 	}
-	// ALERTS is an empty vector when nothing is firing → scalar yields 0.
-	if s.AlertsFiring, err = c.scalarInt(ctx, `count(ALERTS{alertstate="firing"})`); err != nil {
+	// Actionable firing alerts only. The severity filter drops the always-on
+	// Watchdog (the alert-pipeline dead-man's switch, severity "none"); the
+	// alertname filter drops the steady-state request-overcommit warnings this
+	// small 2-node cluster always carries. So the count means "worth a look",
+	// not background noise — which is what the live status badge keys on.
+	// An empty result (nothing firing) yields 0.
+	if s.AlertsFiring, err = c.scalarInt(ctx,
+		`count(ALERTS{alertstate="firing",severity=~"warning|critical",alertname!~"KubeCPUOvercommit|KubeMemoryOvercommit"})`); err != nil {
 		return s, err
 	}
 	// The service's own request rate — visible proof the recursive scrape works.
