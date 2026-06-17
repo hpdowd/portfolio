@@ -11,5 +11,9 @@ export default defineConfig({
     // Keep fingerprinted assets under /_astro/ — the Go static handler applies
     // immutable caching to exactly that prefix (see web.go).
     assets: '_astro',
+    // Externalise all CSS (no inline <style>) so the Content-Security-Policy can
+    // stay `style-src 'self'` with no 'unsafe-inline'. The live script is
+    // likewise a same-origin external file (public/topology.js).
+    inlineStylesheets: 'never',
   },
 });
