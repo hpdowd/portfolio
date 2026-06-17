@@ -72,9 +72,9 @@ func TestScalarIntRounding(t *testing.T) {
 // TestFetch checks that each fixed query lands in the right Snapshot field.
 func TestFetch(t *testing.T) {
 	values := map[string]string{
-		"count(up == 1)":                               "22",
-		"count(up)":                                    "22",
-		`count(ALERTS{alertstate="firing"})`:           "3",
+		"count(up == 1)": "22",
+		"count(up)":      "22",
+		`count(ALERTS{alertstate="firing",severity=~"warning|critical",alertname!~"KubeCPUOvercommit|KubeMemoryOvercommit"})`: "3",
 		`sum(rate(portfolio_http_requests_total[5m]))`: "0.0633",
 	}
 	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
