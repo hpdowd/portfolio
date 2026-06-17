@@ -8,12 +8,15 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /** Use the wide editorial container (home only); reading pages stay narrow. */
+  wide?: boolean;
 }
 
 const {
   title = 'Henry Dowd — Platform / DevOps / SRE',
   description =
     'Platform and SRE engineer. This site is served by a single Go binary on a self-hosted Kubernetes cluster, with live telemetry from that same cluster.',
+  wide = false,
 } = Astro.props;
 
 const year = new Date().getFullYear();
@@ -41,10 +44,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonicalURL} />
   </head>
   <body>
-    <main>
+    <main class={wide ? 'main--wide' : undefined}>
       <slot />
     </main>
-    <footer class="footer">
+    <footer class={wide ? 'footer footer--wide' : 'footer'}>
       <span>© {year} Henry Dowd</span>
       <span>served by one Go binary · self-hosted on k3s</span>
     </footer>

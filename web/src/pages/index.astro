@@ -1,15 +1,13 @@
 ---
 /**
- * Home page — the homelab as a live system diagram (see Topology.astro).
- *
- * This is the "Topology" UI direction: the landing view IS the system. The old
- * editorial hero + status strip is replaced; /cv and /about keep their current
- * styling until the full overhaul lands.
+ * Home page — "Swiss / editorial, mono-led" direction (see Home.astro), the
+ * replacement for the rejected Topology view. /cv and /about keep their current
+ * styling until the overhaul reaches them.
  */
 import Base from '../layouts/Base.astro';
-import Topology from '../components/Topology.astro';
+import Home from '../components/Home.astro';
 ---
 
-<Base>
-  <Topology />
+<Base wide>
+  <Home />
 </Base>
