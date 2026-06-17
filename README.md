@@ -68,7 +68,7 @@ Gitea directly.
 │   ├── public/             favicon, and an optional resume.pdf
 │   └── dist/               build output — embedded into the binary (git-ignored)
 ├── Dockerfile              3-stage: build site → build binary → distroless
-└── .gitea/workflows/       build.yaml — CI that builds, pushes, and deploys
+└── .github/workflows/       build.yml — CI: build on GitHub, push to GHCR, deploy
 ```
 
 ## Local development
