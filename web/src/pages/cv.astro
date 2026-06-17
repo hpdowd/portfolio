@@ -1,51 +1,184 @@
 ---
 /**
- * CV page. A static, structured CV — fill in the sections with your own
- * details. The downloadable PDF (if you add one) lives at /resume.pdf:
- * drop the file into web/public/resume.pdf and it will be served at that path.
+ * CV — real content, sourced from primary_cv.tex (infra variant). Same type
+ * system as the home: serif headings, mono labels/dates, sans body, hairline
+ * section rules, one gruvbox accent. A downloadable PDF can live at
+ * web/public/resume.pdf and be linked from the header once added.
  */
 import Base from '../layouts/Base.astro';
+
+const skills: [string, string][] = [
+  ['Containers & GitOps', 'Kubernetes (k3s), Docker, Helm, ArgoCD, Longhorn, MetalLB, Traefik, Sealed Secrets'],
+  ['Linux & Virtualisation', 'Arch Linux, Proxmox VE, LXC, ZFS, systemd, shell scripting, SSH key management'],
+  ['Networking', 'TCP/IP, DNS (split-horizon), DHCP, WireGuard, Cloudflare Tunnels, reverse proxies / ingress, SSL/TLS'],
+  ['Observability & Backup', 'VictoriaMetrics, Grafana, Alertmanager, restic, Backblaze B2'],
+  ['Languages & Tools', 'Python, Java, C, Bash, SQL; Git, Gitea, Let’s Encrypt, Technitium DNS, LaTeX'],
+];
 ---
 
-<Base title="CV — Henry Dowd">
-  <article class="prose">
-    <p class="kicker">Curriculum Vitae</p>
-    <h1>Henry Dowd</h1>
-    <p class="lede">Platform · DevOps · SRE</p>
+<Base
+  title="CV — Henry Dowd"
+  description="Henry Dowd — final-year BSc Pure Mathematics & Computer Science at Maynooth University, targeting graduate platform engineering / DevOps / SRE roles."
+>
+  <article class="cv">
+    <header class="cv__head">
+      <div class="cv__headtop">
+        <a class="cv__back" href="/">← Home</a>
+        <a class="cv__pdf" href="/resume.pdf" download>Download PDF ↓</a>
+      </div>
+      <h1>Henry Dowd</h1>
+      <p class="cv__contact">
+        Ireland<span class="sep">·</span>
+        <a href="mailto:henry@dowd.ie">henry@dowd.ie</a><span class="sep">·</span>
+        <a href="https://www.linkedin.com/in/henrypdowd/" target="_blank" rel="noopener">linkedin.com/in/henrypdowd</a><span class="sep">·</span>
+        <a href="https://github.com/hpdowd" target="_blank" rel="noopener">github.com/hpdowd</a>
+      </p>
+    </header>
 
-    <p class="note">
-      Placeholder structure — replace the items below with real content. To
-      offer a PDF download, add <code>web/public/resume.pdf</code> and link it.
-    </p>
+    <section class="cv__sec">
+      <h2>Profile</h2>
+      <p>
+        Final-year BSc in Pure Mathematics &amp; Computer Science at Maynooth University
+        (graduating May 2026), with a year abroad at the University of Ottawa. I run a
+        two-node k3s cluster on a single Proxmox host, built up from individual components
+        and managed entirely through GitOps — ArgoCD reconciles the cluster against a git
+        repository, with Sealed Secrets, Longhorn storage, MetalLB, and Traefik ingress.
+        Comfortable with Linux administration, networking, and container orchestration, and
+        I document architectural decisions and incidents as I go. Targeting graduate roles
+        in platform engineering, DevOps, SRE, or systems administration.
+      </p>
+    </section>
 
-    <h2>Experience</h2>
-    <ul>
-      <li><strong>Role — Company</strong> · dates<br />What you owned and the impact you had.</li>
-      <li><strong>Role — Company</strong> · dates<br />What you owned and the impact you had.</li>
-    </ul>
+    <section class="cv__sec">
+      <h2>Technical Skills</h2>
+      <dl class="cv__skills">
+        {skills.map(([k, v]) => (
+          <div><dt>{k}</dt><dd>{v}</dd></div>
+        ))}
+      </dl>
+    </section>
 
-    <h2>Selected projects</h2>
-    <ul>
-      <li>
-        <strong>Self-hosted homelab platform</strong> — k3s + ArgoCD GitOps,
-        self-hosted Gitea CI/CD, VictoriaMetrics observability, sealed-secret
-        supply chain. (This site runs on it.)
-      </li>
-      <li><strong>Project</strong> — one line on what it does and why it mattered.</li>
-    </ul>
+    <section class="cv__sec">
+      <h2>Projects</h2>
 
-    <h2>Skills</h2>
-    <ul>
-      <li>Kubernetes · ArgoCD · GitOps · Helm</li>
-      <li>Go · CI/CD · containers · Linux</li>
-      <li>Observability — Prometheus/VictoriaMetrics, Grafana, alerting/SLOs</li>
-    </ul>
+      <div class="cv__entry">
+        <div class="cv__entryhead">
+          <h3>Self-Hosted Infrastructure &amp; Home Lab <span class="cv__org">· Personal</span></h3>
+          <span class="cv__dates">2024 – Present</span>
+        </div>
+        <ul>
+          <li>Run a two-node k3s cluster on a single Proxmox host, managed end to end with GitOps: ArgoCD reconciles the cluster against a git repository using the app-of-apps pattern, so the repo is the single source of truth. <a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">github.com/hpdowd/homelab</a></li>
+          <li>Built the platform from individual components — MetalLB for load balancing, Traefik for ingress, Longhorn for replicated storage, and Sealed Secrets to keep encrypted credentials in git.</li>
+          <li>Expose services publicly through a Cloudflare Tunnel with no inbound ports open, and resolve the same hostnames internally with split-horizon DNS (Technitium) so LAN traffic stays in-house.</li>
+          <li>Added a VictoriaMetrics, Grafana, and Alertmanager stack for metrics and alerting, with offsite restic backups to Backblaze B2; documented decisions as ADRs and incidents as post-mortems.</li>
+        </ul>
+      </div>
 
-    <h2>Education</h2>
-    <ul>
-      <li><strong>Degree</strong> — Institution · year</li>
-    </ul>
+      <div class="cv__entry">
+        <div class="cv__entryhead">
+          <h3>Final Year Project — Paraphrase Detection <span class="cv__org">· Maynooth University</span></h3>
+          <span class="cv__dates">2025 – 2026</span>
+        </div>
+        <ul>
+          <li>Built a dual-branch classifier fusing BERT cosine similarity, Zhang–Shasha tree edit distance, Jaccard overlap, and length ratio; evaluated on the MSRP corpus. <a href="https://github.com/hpdowd/paraphrase_detector" target="_blank" rel="noopener">github.com/hpdowd/paraphrase_detector</a></li>
+          <li>Implemented in Python with HuggingFace Transformers, PyTorch, and scikit-learn.</li>
+          <li>Performed error analysis comparing structural vs. semantic methods, with confusion matrices, score distributions, and parse-tree examples of failure modes.</li>
+        </ul>
+      </div>
 
-    <p><a href="/">← Back home</a></p>
+      <div class="cv__entry">
+        <div class="cv__entryhead">
+          <h3>PDF-Sorter — Workplace Automation Tool <span class="cv__org">· Python</span></h3>
+          <span class="cv__dates">2025</span>
+        </div>
+        <ul>
+          <li>Regex-based tool to auto-sort and rename PDFs by filename and content metadata, with OCR fallback; built and deployed during an HR placement at Roscommon County Council. <a href="https://github.com/hpdowd/PDF-Sorter" target="_blank" rel="noopener">github.com/hpdowd/PDF-Sorter</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cv__sec">
+      <h2>Experience</h2>
+      <div class="cv__entry">
+        <div class="cv__entryhead">
+          <h3>Summer Student — Human Resources <span class="cv__org">· Roscommon County Council</span></h3>
+          <span class="cv__dates">Jun – Sep 2025</span>
+        </div>
+        <ul>
+          <li>Handled data entry, records management, and financial processing across employee files and payroll-adjacent administration.</li>
+          <li>Identified a repetitive document-sorting bottleneck and built a custom Python tool (PDF-Sorter) to automate the workflow.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cv__sec">
+      <h2>Education</h2>
+      <div class="cv__entry">
+        <div class="cv__entryhead">
+          <h3>BSc Computational Thinking <span class="cv__org">· Maynooth University</span></h3>
+          <span class="cv__dates">Sep 2022 – May 2026</span>
+        </div>
+        <p class="cv__sub">Pure Mathematics &amp; Computer Science</p>
+        <p><strong>Relevant modules:</strong> Operating Systems, Communications &amp; Concurrency; Algorithms &amp; Data Structures; Programming Languages &amp; Compilers; Theory of Computation; Software Verification.</p>
+      </div>
+      <div class="cv__entry">
+        <div class="cv__entryhead">
+          <h3>Study Abroad <span class="cv__org">· University of Ottawa</span></h3>
+          <span class="cv__dates">Sep 2024 – May 2025</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv__sec">
+      <h2>Certifications &amp; Additional</h2>
+      <p>Fortinet NSE 1–3 (2026) · Full driving licence · CTYI alumnus</p>
+    </section>
   </article>
 </Base>
+
+<style>
+  .cv { font-family: var(--sans); }
+  .cv__headtop { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .cv__back { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft); text-decoration: none; }
+  .cv__back:hover { color: var(--accent); }
+  .cv__pdf { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid var(--line); padding: 0.3rem 0.7rem; }
+  .cv__pdf:hover { border-color: var(--accent); }
+
+  .cv__head { margin-bottom: 0.5rem; }
+  .cv__head h1 { font-size: clamp(2.4rem, 6vw, 3.4rem); margin: 0.7rem 0 0.6rem; letter-spacing: -0.02em; }
+  .cv__contact { font-family: var(--mono); font-size: 0.84rem; color: var(--ink-soft); margin: 0; line-height: 1.9; }
+  .cv__contact a { color: var(--ink); text-decoration: none; }
+  .cv__contact a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .cv__contact .sep { margin: 0 0.55rem; color: var(--ink-soft); }
+
+  .cv__sec { padding: 1.75rem 0; border-top: 1px solid var(--line); }
+  .cv__sec > h2 {
+    font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+    margin: 0 0 1.25rem;
+  }
+
+  .cv__skills div {
+    display: grid; grid-template-columns: minmax(0, 12rem) 1fr; gap: 0.3rem 1.5rem;
+    padding: 0.6rem 0; border-top: 1px solid var(--line);
+  }
+  .cv__skills div:first-child { border-top: 0; padding-top: 0; }
+  .cv__skills dt { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
+  .cv__skills dd { margin: 0; font-family: var(--serif); font-size: 1.02rem; }
+
+  .cv__entry { margin-bottom: 1.6rem; }
+  .cv__entry:last-child { margin-bottom: 0; }
+  .cv__entryhead { display: flex; align-items: baseline; justify-content: space-between; gap: 0.3rem 1.25rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .cv__entry h3 { font-family: var(--serif); font-weight: 600; font-size: 1.28rem; line-height: 1.2; margin: 0; }
+  .cv__org { font-family: var(--mono); font-size: 0.82rem; font-weight: 400; color: var(--ink-soft); }
+  .cv__dates { font-family: var(--mono); font-size: 0.78rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cv__sub { font-family: var(--mono); font-size: 0.82rem; color: var(--ink-soft); margin: 0 0 0.5rem; }
+
+  .cv__entry ul { margin: 0.4rem 0 0; padding-left: 1.15rem; }
+  .cv__entry li { margin-bottom: 0.45rem; line-height: 1.55; }
+  .cv__entry li:last-child { margin-bottom: 0; }
+  .cv__entry a, .cv p a { color: var(--accent); text-decoration: none; word-break: break-word; }
+  .cv__entry a:hover, .cv p a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .cv p { line-height: 1.62; margin: 0; }
+  .cv :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
