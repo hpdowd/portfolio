@@ -18,7 +18,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Unit tests for the pure logic (VM scalar parser, Gitea commit curation,
+  # metrics exposition, cache stale-while-revalidate). No Docker needed, so it
+  # gates the image build cheaply. Guarded like build so the in-cluster Gitea
+  # mirror skips it; tests still run here on GitHub before anything ships.
+  test:
+    if: github.server_url == 'https://github.com'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)" || { echo 'gofmt needed on:'; gofmt -l .; exit 1; }
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test ./...
+
   build:
+    needs: test
     if: github.server_url == 'https://github.com'
     runs-on: ubuntu-latest
     permissions:
