@@ -5,7 +5,7 @@ import "net/http"
 // contentSecurityPolicy is intentionally strict: the site loads only same-origin
 // assets and talks only to its own /api. All CSS and JS are external same-origin
 // files — Astro is configured with inlineStylesheets:'never' and the live script
-// is served from /topology.js — so 'self' needs no 'unsafe-inline'. If the
+// is served from /home.js — so 'self' needs no 'unsafe-inline'. If the
 // front-end ever loads a cross-origin asset (a web font, an embed), widen the
 // matching directive here rather than reaching for 'unsafe-inline'.
 const contentSecurityPolicy = "default-src 'self'; " +
