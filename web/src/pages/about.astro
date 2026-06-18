@@ -36,10 +36,10 @@ import Base from '../layouts/Base.astro';
 
     <h2>How this site works</h2>
     <p>
-      This page is served by a single Go binary I wrote, running on that same cluster. It
-      reads live metrics from the monitoring stack and recent commits from my git server
-      over the internal network, exposes its own metrics, and is scraped by the very system
-      it reports on — a small, honest demo of the thing it's describing. The source is on
+      This page runs as a small service on that same cluster — deployed by the same GitOps
+      pipeline as everything else, and scraped by the same monitoring stack it reports on.
+      It reads live metrics and recent commits over the internal network and exposes its
+      own, so the platform ends up monitoring the page that describes it. The source is on
       <a href="https://github.com/hpdowd/portfolio" target="_blank" rel="noopener">GitHub</a>.
     </p>
   </article>

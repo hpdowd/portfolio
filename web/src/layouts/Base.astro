@@ -15,7 +15,7 @@ interface Props {
 const {
   title = 'Henry Dowd — Platform / DevOps / SRE',
   description =
-    'Platform and SRE engineer. This site is served by a single Go binary on a self-hosted Kubernetes cluster, with live telemetry from that same cluster.',
+    'Henry Dowd — final-year Maths & Computer Science student targeting platform / DevOps / SRE roles, with a self-hosted Kubernetes homelab. This site runs on that cluster, with live telemetry from it.',
   wide = false,
 } = Astro.props;
 
@@ -49,7 +49,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </main>
     <footer class={wide ? 'footer footer--wide' : 'footer'}>
       <span>© {year} Henry Dowd</span>
-      <span>served by one Go binary · self-hosted on k3s</span>
+      <span>self-hosted on k3s · deployed by GitOps</span>
     </footer>
   </body>
 </html>
