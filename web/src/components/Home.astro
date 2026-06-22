@@ -24,7 +24,7 @@
     <div class="masthead__id">
       <p class="eyebrow">Platform · DevOps · SRE</p>
       <h1 class="name">Henry Dowd</h1>
-      <p class="tagline">I build infrastructure and the things that run on it — plus the odd Android app.</p>
+      <p class="tagline">I build infrastructure and the things that run on it.</p>
     </div>
     <div class="masthead__side">
       <p class="badge" aria-live="polite">
@@ -58,7 +58,7 @@
         <h2 class="block__h">About</h2>
         <p class="lede">
           I build software and then run it myself, on hardware I own. Most of it
-          lands on a small Kubernetes cluster at home — the same cluster that
+          lands on a small Kubernetes cluster at home, the same cluster that
           serves this page and feeds the panel on the right. I'm drawn to the
           unglamorous parts: deploys that don't wake you up, and monitoring that
           notices a problem before a user does.
@@ -77,7 +77,7 @@
             A Kubernetes cluster I run at home on Proxmox. It's all GitOps: I push
             to my own Gitea, ArgoCD brings the cluster in line with the repo, and
             VictoriaMetrics keeps an eye on the rest. It hosts Nextcloud, Immich
-            and a handful of other things — including this page, which gets scraped
+            and a handful of other things, including this page, which gets scraped
             by the same stack that's filling the panel on the right.
           </p>
         </article>
@@ -90,9 +90,9 @@
           <p>
             Works out whether two sentences mean the same thing. Instead of
             fine-tuning a big model and treating it as a black box, I combined four
-            features you can actually inspect — BERT similarity, tree-edit distance
-            over the parse, word overlap and a length ratio — into a logistic
-            regression. On the MSR Paraphrase Corpus it edged out BERT on its own
+            features you can actually inspect into a logistic regression: BERT
+            similarity, tree-edit distance over the parse, word overlap, and a
+            length ratio. On the MSR Paraphrase Corpus it edged out BERT on its own
             (0.79 ROC AUC against 0.78), and each of the four features held up as
             a significant signal in its own right.
           </p>
@@ -101,14 +101,16 @@
         <article class="entry">
           <div class="entry__head">
             <h3><a href="https://github.com/hpdowd/nextkeep" target="_blank" rel="noopener">NextKeep</a></h3>
-            <p class="entry__meta">Android · Nextcloud Notes · offline-first</p>
+            <p class="entry__meta">Android · AI-built · Nextcloud Notes</p>
           </div>
           <p>
-            A notes app for Android that syncs with a self-hosted Nextcloud Notes
-            server — the feel of Google Keep, without Google keeping the notes.
-            Everything is kept on the device first and syncs when there's a
-            connection, so it still works on the train. QR-code login, a
-            markdown editor, dynamic theming.
+            A notes app for Android, built end to end with an AI coding agent while
+            I shaped the design and reviewed its output: the feel of Google Keep,
+            without Google keeping the notes. It syncs with my self-hosted Nextcloud
+            and keeps everything on the device first, so it still works offline, with
+            QR-code login, a markdown editor and dynamic theming. Android isn't my
+            field; the experiment was how far careful direction could take a model on
+            a real, shippable app.
           </p>
         </article>
 

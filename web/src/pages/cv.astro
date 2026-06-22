@@ -30,6 +30,7 @@ const skills: [string, string][] = [
       <p class="cv__contact">
         Ireland<span class="sep">·</span>
         <a href="mailto:henry@dowd.ie">henry@dowd.ie</a><span class="sep">·</span>
+        <a href="https://henrydowd.dev" target="_blank" rel="noopener">henrydowd.dev</a><span class="sep">·</span>
         <a href="https://www.linkedin.com/in/henrypdowd/" target="_blank" rel="noopener">linkedin.com/in/henrypdowd</a><span class="sep">·</span>
         <a href="https://github.com/hpdowd" target="_blank" rel="noopener">github.com/hpdowd</a>
       </p>
@@ -41,7 +42,7 @@ const skills: [string, string][] = [
         Final-year BSc in Pure Mathematics &amp; Computer Science at Maynooth University
         (graduating May 2026), with a year abroad at the University of Ottawa. I run a
         two-node k3s cluster on a single Proxmox host, built up from individual components
-        and managed entirely through GitOps — ArgoCD reconciles the cluster against a git
+        and managed entirely through GitOps: ArgoCD reconciles the cluster against a git
         repository, with Sealed Secrets, Longhorn storage, MetalLB, and Traefik ingress.
         Comfortable with Linux administration, networking, and container orchestration, and
         I document architectural decisions and incidents as I go. Targeting graduate roles
@@ -68,7 +69,7 @@ const skills: [string, string][] = [
         </div>
         <ul>
           <li>Run a two-node k3s cluster on a single Proxmox host, managed end to end with GitOps: ArgoCD reconciles the cluster against a git repository using the app-of-apps pattern, so the repo is the single source of truth. <a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">github.com/hpdowd/homelab</a></li>
-          <li>Built the platform from individual components — MetalLB for load balancing, Traefik for ingress, Longhorn for replicated storage, and Sealed Secrets to keep encrypted credentials in git.</li>
+          <li>Built the platform from individual components: MetalLB for load balancing, Traefik for ingress, Longhorn for replicated storage, and Sealed Secrets to keep encrypted credentials in git.</li>
           <li>Expose services publicly through a Cloudflare Tunnel with no inbound ports open, and resolve the same hostnames internally with split-horizon DNS (Technitium) so LAN traffic stays in-house.</li>
           <li>Added a VictoriaMetrics, Grafana, and Alertmanager stack for metrics and alerting, with offsite restic backups to Backblaze B2; documented decisions as ADRs and incidents as post-mortems.</li>
         </ul>
