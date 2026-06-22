@@ -19,3 +19,5 @@ node_modules/
 # Editor / OS noise
 .DS_Store
 *.swp
+
+writing_style.md
