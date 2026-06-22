@@ -66,7 +66,7 @@ Gitea directly.
 │   └── api/                /api/status and /api/git handlers
 ├── web/                    Astro front-end (static; built into web/dist)
 │   ├── src/                Base layout, Home.astro, cv/about pages, global styles
-│   ├── public/             favicon, home.js (live wiring), resume.pdf
+│   ├── public/             favicon, home.js (live wiring), resume.pdf, robots.txt, sitemap.xml, og-image.png
 │   └── dist/               build output — embedded into the binary (git-ignored)
 ├── docs/design.md          design rationale: anti-AI-aesthetic research + decisions
 ├── Dockerfile              3-stage: build site → build binary → distroless
@@ -160,6 +160,24 @@ a gate before the image is built.
 The front-end's visual direction (a Swiss/editorial, Gruvbox-themed layout that
 deliberately avoids the generic "AI-generated" aesthetic) is documented in
 [`docs/design.md`](docs/design.md).
+
+## SEO & social metadata
+
+Static, dependency-free, and hand-maintained (the site is only three routes):
+
+- `web/public/robots.txt` — allows all crawlers and points at the sitemap.
+- `web/public/sitemap.xml` — the three canonical URLs.
+- **Open Graph / Twitter card** — `og:image` plus `twitter:card=summary_large_image`
+  in the base layout reference `og-image.png` (1200×630), so a shared link renders
+  a branded preview. The PNG is generated from `web/og-image.svg` (which mirrors the
+  site palette and type); regenerate it after editing the SVG with:
+
+  ```bash
+  rsvg-convert -w 1200 -h 630 web/og-image.svg -o web/public/og-image.png
+  ```
+- **JSON-LD `Person`** on the CV page for rich-result eligibility. It is emitted as
+  an inline `application/ld+json` data block, which the browser never executes, so
+  the strict same-origin `script-src` CSP does not affect it.
 
 ## Build & deploy (CI/CD)
 

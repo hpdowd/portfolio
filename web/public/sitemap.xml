@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Three static routes; hand-maintained (the site is small and dependency-free). -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://henrydowd.dev/</loc></url>
+  <url><loc>https://henrydowd.dev/cv/</loc></url>
+  <url><loc>https://henrydowd.dev/about/</loc></url>
+</urlset>
