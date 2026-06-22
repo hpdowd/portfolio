@@ -14,12 +14,29 @@ const skills: [string, string][] = [
   ['Observability & Backup', 'VictoriaMetrics, Grafana, Alertmanager, restic, Backblaze B2'],
   ['Languages & Tools', 'Python, Java, C, Bash, SQL; Git, Gitea, Let’s Encrypt, Technitium DNS, LaTeX'],
 ];
+
+// JSON-LD Person, emitted on the CV for rich-result eligibility. Kept in sync
+// with the visible CV content above.
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Henry Dowd',
+  url: 'https://henrydowd.dev',
+  email: 'henry@dowd.ie',
+  description:
+    'Final-year BSc Pure Mathematics & Computer Science student at Maynooth University, targeting graduate platform engineering / DevOps / SRE roles.',
+  address: { '@type': 'PostalAddress', addressCountry: 'IE' },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Maynooth University' },
+  knowsAbout: ['Kubernetes', 'GitOps', 'Linux', 'Platform Engineering', 'DevOps', 'Site Reliability Engineering', 'Observability'],
+  sameAs: ['https://github.com/hpdowd', 'https://www.linkedin.com/in/henrypdowd/'],
+};
 ---
 
 <Base
   title="CV — Henry Dowd"
   description="Henry Dowd — final-year BSc Pure Mathematics & Computer Science at Maynooth University, targeting graduate platform engineering / DevOps / SRE roles."
 >
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(personLd)} />
   <article class="cv">
     <header class="cv__head">
       <div class="cv__headtop">

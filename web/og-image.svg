@@ -1,0 +1,13 @@
+<!-- Source for web/public/og-image.png (the social share card).
+     Regenerate after editing:  rsvg-convert -w 1200 -h 630 web/og-image.svg -o web/public/og-image.png
+     Palette + type mirror src/styles/global.css (gruvbox light). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Henry Dowd — Platform, DevOps, SRE — henrydowd.dev">
+  <rect width="1200" height="630" fill="#fbf1c7"/>
+  <rect x="48" y="48" width="1104" height="534" fill="none" stroke="#d5c4a1" stroke-width="2"/>
+  <rect x="100" y="168" width="64" height="6" fill="#427b58"/>
+  <text x="184" y="179" font-family="'JetBrains Mono','DejaVu Sans Mono',monospace" font-size="25" letter-spacing="5" fill="#7c6f64">PLATFORM · DEVOPS · SRE</text>
+  <text x="96" y="322" font-family="'Charter','Georgia','Times New Roman',serif" font-weight="700" font-size="130" letter-spacing="-3" fill="#3c3836">Henry Dowd</text>
+  <text x="100" y="392" font-family="'Charter','Georgia','Times New Roman',serif" font-size="36" fill="#7c6f64">I build infrastructure and the things that run on it.</text>
+  <text x="100" y="540" font-family="'JetBrains Mono','DejaVu Sans Mono',monospace" font-size="26" fill="#427b58">henrydowd.dev</text>
+  <text x="1100" y="540" text-anchor="end" font-family="'JetBrains Mono','DejaVu Sans Mono',monospace" font-size="21" fill="#7c6f64">self-hosted on k3s · self-monitored</text>
+</svg>
