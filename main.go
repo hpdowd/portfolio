@@ -87,6 +87,16 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
+	// Keep the upstream snapshots warm independently of public traffic: probe
+	// VictoriaMetrics and Gitea on the cache cadence, starting immediately. This
+	// makes portfolio_upstream_up present and current from process start — the
+	// Kubernetes probes hit /healthz on :9090, not /api, so an idle pod would
+	// otherwise never populate it — and means the first real visitor already gets
+	// live data instead of triggering a cold load.
+	runCtx, cancelRun := context.WithCancel(context.Background())
+	defer cancelRun()
+	go warmUpstreams(runCtx, apiSrv, cfg.CacheTTL)
+
 	// Run both servers. The first to return an error trips shutdown.
 	errCh := make(chan error, 2)
 	go func() { errCh <- serve(publicServer) }()
@@ -103,8 +113,10 @@ func main() {
 		log.Printf("received %s, shutting down", sig)
 	}
 
-	// Graceful shutdown: stop accepting new connections and let in-flight
-	// requests drain (up to the deadline) so a rollout doesn't cut requests.
+	// Graceful shutdown: stop the warmer, then stop accepting new connections and
+	// let in-flight requests drain (up to the deadline) so a rollout doesn't cut
+	// requests.
+	cancelRun()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	_ = publicServer.Shutdown(ctx)
@@ -118,4 +130,22 @@ func serve(s *http.Server) error {
 		return err
 	}
 	return nil
+}
+
+// warmUpstreams probes the cached upstreams on the cache TTL, starting at once,
+// until ctx is cancelled. Each probe reports upstream reachability to the
+// metrics registry as a side effect (see api.API.Warm), so portfolio_upstream_up
+// reflects real health on an idle pod instead of only after live /api traffic.
+func warmUpstreams(ctx context.Context, a *api.API, every time.Duration) {
+	t := time.NewTicker(every)
+	defer t.Stop()
+	a.Warm() // probe once at startup so the gauges are populated right away
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+			a.Warm()
+		}
+	}
 }

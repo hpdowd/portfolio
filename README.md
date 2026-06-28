@@ -142,6 +142,11 @@ Exposed at `:9090/metrics` (hand-written exposition; see `internal/metrics`):
 
 Routes are folded into a small fixed set of labels to keep cardinality bounded.
 
+The `portfolio_upstream_up` series are pre-registered at startup and kept fresh by
+a background probe on the cache cadence, so they are always present — even on an
+idle pod with no `/api` traffic — which means an `absent()` alert signals a broken
+scrape rather than "the API hasn't been hit yet".
+
 ## Security headers & tests
 
 Every response on the public `:8080` listener carries a strict
