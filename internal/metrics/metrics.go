@@ -56,6 +56,25 @@ func New(version, commit string) *Metrics {
 	}
 }
 
+// RegisterUpstreams pre-creates the portfolio_upstream_up series for the named
+// upstreams with value 0 ("not yet observed"), so they exist from process start
+// rather than only after an upstream's first use. Without this the series are
+// absent on a freshly-started pod until live /api traffic exercises a loader,
+// which makes an absent()-based alert fire on a perfectly healthy pod. Seeding
+// them lets absence mean "the scrape is broken", not "nothing has hit /api yet".
+//
+// Values already recorded are left untouched, so it is safe to call repeatedly.
+// SetUpstreamUp flips the value to 1/0 as upstreams are actually used.
+func (m *Metrics) RegisterUpstreams(names ...string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	for _, name := range names {
+		if _, ok := m.upstream[name]; !ok {
+			m.upstream[name] = 0
+		}
+	}
+}
+
 // SetUpstreamUp records whether an upstream (e.g. "vm", "gitea") was reachable
 // on its most recent use. Called by the data loaders.
 func (m *Metrics) SetUpstreamUp(name string, up bool) {
@@ -119,7 +138,7 @@ func (m *Metrics) Handler() http.Handler {
 		writeHelp(&b, "portfolio_http_requests_in_flight", "Requests currently being served.", "gauge")
 		fmt.Fprintf(&b, "portfolio_http_requests_in_flight %d\n", m.inflight)
 
-		writeHelp(&b, "portfolio_upstream_up", "Whether an upstream was reachable on last use (1/0).", "gauge")
+		writeHelp(&b, "portfolio_upstream_up", "Whether an upstream was reachable on its most recent check (1 up / 0 down or not yet checked).", "gauge")
 		for _, name := range sortedKeys(m.upstream) {
 			fmt.Fprintf(&b, "portfolio_upstream_up{upstream=%q} %s\n", name, formatFloat(m.upstream[name]))
 		}

@@ -67,6 +67,34 @@ func TestExposition(t *testing.T) {
 	}
 }
 
+// TestRegisterUpstreams checks the pre-seeding that fixes absent()-based alerts:
+// a registered upstream must appear at 0 in the exposition before any
+// SetUpstreamUp call, and re-registering must not clobber an observed value.
+func TestRegisterUpstreams(t *testing.T) {
+	m := New("v", "c")
+	m.RegisterUpstreams("vm", "gitea")
+
+	if body := render(t, m); !strings.Contains(body, `portfolio_upstream_up{upstream="vm"} 0`) ||
+		!strings.Contains(body, `portfolio_upstream_up{upstream="gitea"} 0`) {
+		t.Errorf("registered upstreams not exposed at 0:\n%s", body)
+	}
+
+	// An observed value must survive a later (idempotent) re-registration.
+	m.SetUpstreamUp("vm", true)
+	m.RegisterUpstreams("vm", "gitea")
+	if body := render(t, m); !strings.Contains(body, `portfolio_upstream_up{upstream="vm"} 1`) {
+		t.Errorf("re-register clobbered an observed value:\n%s", body)
+	}
+}
+
+// render returns the current /metrics exposition for m.
+func render(t *testing.T, m *Metrics) string {
+	t.Helper()
+	rec := httptest.NewRecorder()
+	m.Handler().ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/metrics", nil))
+	return rec.Body.String()
+}
+
 // TestHistogram checks the per-bucket accounting: a value above the last bound
 // is counted only in the total (the implicit +Inf bucket), never in a sized one.
 func TestHistogram(t *testing.T) {

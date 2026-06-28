@@ -18,10 +18,18 @@ import (
 	"git.henrydowd.dev/henry/portfolio/internal/vm"
 )
 
+// The upstreams whose reachability this package reports via
+// portfolio_upstream_up. Named once so registration and reporting can't drift.
+const (
+	upstreamVM    = "vm"
+	upstreamGitea = "gitea"
+)
+
 // upstreamReporter is the part of *metrics.Metrics this package actually needs.
 // Taking an interface keeps the metrics implementation out of this import graph.
 type upstreamReporter interface {
 	SetUpstreamUp(name string, up bool)
+	RegisterUpstreams(names ...string)
 }
 
 // API holds the cached data sources behind the JSON endpoints.
@@ -50,16 +58,21 @@ func New(
 		ctx, cancel := context.WithTimeout(context.Background(), reqTimeout)
 		defer cancel()
 		s, err := vmClient.Fetch(ctx)
-		m.SetUpstreamUp("vm", err == nil)
+		m.SetUpstreamUp(upstreamVM, err == nil)
 		return s, err
 	}
 	gitLoader := func() ([]gitea.Commit, error) {
 		ctx, cancel := context.WithTimeout(context.Background(), reqTimeout)
 		defer cancel()
 		cs, err := giteaClient.RecentCommits(ctx, repo, commitLimit)
-		m.SetUpstreamUp("gitea", err == nil)
+		m.SetUpstreamUp(upstreamGitea, err == nil)
 		return cs, err
 	}
+
+	// Seed both series at 0 so /metrics reports them from the first scrape,
+	// before any loader has run (see RegisterUpstreams). The loaders flip them to
+	// the observed value on each refresh.
+	m.RegisterUpstreams(upstreamVM, upstreamGitea)
 
 	return &API{
 		started: time.Now(),
@@ -73,6 +86,17 @@ func New(
 func (a *API) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/status", a.handleStatus)
 	mux.HandleFunc("/api/git", a.handleGit)
+}
+
+// Warm refreshes every cached upstream so each one's reachability is observed
+// (and reported to metrics) without waiting for live /api traffic. Get() probes
+// in the background when the cached value is missing or stale; the returned
+// values are intentionally discarded. Call it at startup and on the cache
+// cadence to keep portfolio_upstream_up current on an idle pod — and so the
+// first visitor already has fresh data to read.
+func (a *API) Warm() {
+	a.status.Get()
+	a.git.Get()
 }
 
 type statusResponse struct {
