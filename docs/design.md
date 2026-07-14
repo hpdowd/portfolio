@@ -271,15 +271,30 @@ k3s. It also carries the two facts the intro leans on: the Cloudflare-tunnel
 ingress ("no open ports") annotated on the entry arrows, and `restic` as the one
 path that leaves the premises.
 
-**The one live element.** The `Portfolio` node is marked as *this page* and its
-dot is wired to `[data-dot="cluster"]`, so `home.js` recolours it to real cluster
-health (green pulse / amber / red) — the same "this page monitors itself" thesis
-the right-hand telemetry aside carries, reused inside the diagram. Everything
-else is static typography. Respects `prefers-reduced-motion`.
+**Live per-service health (added 2026-07-14, second pass).** The diagram started
+with a single live dot on the `Portfolio` node; it now lights *every* monitored
+node. Each node carries a `data-target`, and `home.js` shows+colours its dot only
+when `/api/status`'s curated `services` map reports that component — so a dot
+means "genuinely a scrape target," and the app nodes that aren't instrumented
+stay honestly dotless. Building this surfaced a truth worth recording: the honest
+version of "the diagram is alive" is that **most of the app tier isn't
+monitored** — only the platform/observability plane is (portfolio, longhorn,
+victoria-metrics, grafana, alertmanager, and — after adding scrapes in the
+homelab repo — traefik and argocd). Lighting only the real targets reads as more
+credible to an SRE than faking green on everything. Respects
+`prefers-reduced-motion`.
+
+**Companion: a public status page (`/status`).** The same self-monitoring thesis,
+given its own room: 30-day platform availability (`avg` of up targets) as a
+per-day strip plus 1/7/30-day rollups, read from `/api/uptime` (a VM range
+query). It's the "here's my SLO, publicly" move that fits a platform/SRE
+portfolio, kept in the same type system rather than looking like a Grafana embed.
 
 **Lesson for next time.** A literal diagram is not off-limits; a literal diagram
 *as the entire home layout* was. Scope the honest-but-showy idea to a section,
 build it in the page's own visual language, and it stops reading as a gimmick.
+And when a live element depends on real telemetry, let what's *actually* measured
+drive it — don't invent green.
 
 ## Sources
 

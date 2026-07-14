@@ -35,6 +35,7 @@ appears as a monitored service in the very stack it surfaces.
         │   :8080  ── /            embedded Astro site   │  ◀ public
         │          └─ /api/status  curated JSON  ┐       │
         │          └─ /api/git     curated JSON  │       │
+        │          └─ /api/uptime  curated JSON  │       │
         │                                        │       │
         │   :9090  ── /metrics  (Prometheus)     │       │  ◀ private
         │          └─ /healthz  (k8s probes)     │       │     (scrape + probes)
@@ -49,6 +50,13 @@ appears as a monitored service in the very stack it surfaces.
 The browser only ever receives curated JSON; it never touches VictoriaMetrics or
 Gitea directly.
 
+Two live surfaces build on this. The home page's infrastructure diagram lights
+each node from per-service `up` state (`/api/status` returns a curated
+`services` map — canonical names only, never raw job/pod/IP labels), so a node
+shows a health dot **only if it's genuinely a scrape target**. A public
+[`/status`](https://henrydowd.dev/status) page charts 30-day platform
+availability from `/api/uptime`.
+
 ## Repository layout
 
 ```
@@ -61,12 +69,12 @@ Gitea directly.
 │   ├── config/             environment-driven configuration
 │   ├── cache/              stale-while-revalidate TTL cache (one value)
 │   ├── metrics/            hand-rolled Prometheus exposition + middleware
-│   ├── vm/                 VictoriaMetrics client (fixed instant queries)
+│   ├── vm/                 VictoriaMetrics client (fixed instant + range queries)
 │   ├── gitea/              Gitea client (anonymous public-repo reads)
-│   └── api/                /api/status and /api/git handlers
+│   └── api/                /api/status, /api/git, /api/uptime handlers
 ├── web/                    Astro front-end (static; built into web/dist)
-│   ├── src/                Base layout, Home.astro, cv/about pages, global styles
-│   ├── public/             favicon, home.js (live wiring), resume.pdf, robots.txt, sitemap.xml, og-image.png
+│   ├── src/                Base layout, Home.astro, cv/about/status/404 pages, global styles
+│   ├── public/             favicon, home.js + status.js (live wiring), resume.pdf, robots.txt, sitemap.xml, og-image.png
 │   └── dist/               build output — embedded into the binary (git-ignored)
 ├── docs/design.md          design rationale: anti-AI-aesthetic research + decisions
 ├── Dockerfile              3-stage: build site → build binary → distroless
@@ -124,8 +132,9 @@ addresses by the Deployment in the homelab repo.
 | Port | Path | Notes |
 |---|---|---|
 | 8080 | `/` | Embedded static site (public) |
-| 8080 | `/api/status` | Service uptime + cluster snapshot (curated JSON) |
+| 8080 | `/api/status` | Service uptime + cluster snapshot, incl. per-service `up` map (curated JSON) |
 | 8080 | `/api/git` | Recent commits of the public homelab repo (curated JSON) |
+| 8080 | `/api/uptime` | 30-day platform availability history for `/status` (curated JSON) |
 | 9090 | `/metrics` | Prometheus exposition — **not** Ingress-routed |
 | 9090 | `/healthz` | Liveness/readiness — **not** Ingress-routed |
 
@@ -152,8 +161,8 @@ scrape rather than "the API hasn't been hit yet".
 Every response on the public `:8080` listener carries a strict
 `Content-Security-Policy` — same-origin `script-src` / `style-src` with no
 `unsafe-inline`, which is why all CSS and JS are external same-origin files (Astro
-builds with `inlineStylesheets: 'never'` and the live script is served from
-`/home.js`) — plus `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`,
+builds with `inlineStylesheets: 'never'` and the live scripts are served from
+`/home.js` and `/status.js`) — plus `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`,
 `Permissions-Policy`, and HSTS. The private `:9090` listener is deliberately left
 bare. See `security.go`.
 
@@ -168,10 +177,10 @@ deliberately avoids the generic "AI-generated" aesthetic) is documented in
 
 ## SEO & social metadata
 
-Static, dependency-free, and hand-maintained (the site is only three routes):
+Static, dependency-free, and hand-maintained (the site is only four routes):
 
 - `web/public/robots.txt` — allows all crawlers and points at the sitemap.
-- `web/public/sitemap.xml` — the three canonical URLs.
+- `web/public/sitemap.xml` — the four canonical URLs, each with `<lastmod>`.
 - **Open Graph / Twitter card** — `og:image` plus `twitter:card=summary_large_image`
   in the base layout reference `og-image.png` (1200×630), so a shared link renders
   a branded preview. The PNG is generated from `web/og-image.svg` (which mirrors the
@@ -180,9 +189,12 @@ Static, dependency-free, and hand-maintained (the site is only three routes):
   ```bash
   rsvg-convert -w 1200 -h 630 web/og-image.svg -o web/public/og-image.png
   ```
-- **JSON-LD `Person`** on the CV page for rich-result eligibility. It is emitted as
-  an inline `application/ld+json` data block, which the browser never executes, so
-  the strict same-origin `script-src` CSP does not affect it.
+- **JSON-LD** for rich-result eligibility: a `Person` on the CV page and a
+  `WebSite` + `Person` graph on the home page. Each is emitted as an inline
+  `application/ld+json` data block, which the browser never executes, so the
+  strict same-origin `script-src` CSP does not affect it.
+- **Branded 404** — `src/pages/404.astro`, served with a real `404` status by the
+  Go static handler (`web.go`) for any unknown path.
 
 ## Build & deploy (CI/CD)
 
