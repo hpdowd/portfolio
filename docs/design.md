@@ -240,6 +240,47 @@ the key takeaway", "at the end of the day".
   concede limits honestly; let the real numbers (req/s, AUC, target counts) do
   the bragging.
 
+## Part 7 — The infrastructure diagram (added 2026-07-14)
+
+*Shipped to the home page as an `Infrastructure` section below the CV content.
+This is the resolution of the tension Part 3 named: the **whole-page** "Topology"
+was the rejected gimmick, but a **single disciplined diagram section** — built
+from the site's own type system rather than as a flashy topology — is on-thesis
+for a platform/SRE portfolio. The goal was a diagram that reads as an engineered
+schematic, not as Grafana and not as an AI template.*
+
+**Constraints it was built under.** No new dependencies; same tokens as the rest
+of the page (mono/hairline/zero-radius, one reserved accent); CSP stays
+`script-src 'self'` (no new inline script); must reflow to mobile without the
+page scrolling horizontally.
+
+**Formats prototyped and compared (all four built live, then judged).**
+
+| Format | What it is | Why not chosen |
+|---|---|---|
+| A · Layered bands | Horizontal layers (ingress → routing → apps → platform → backup → metal), mono tag per layer, chips, connector arrows | Clear and scannable, but reads as a *list of tiers*, not as a system; the layering is the only relationship it shows |
+| C · Left → right flow | Boxed stages (`ingress → edge → routing → apps`) with arrows, platform/metal as a base band | Good for a request *trace*, but wide (needs horizontal scroll on mobile) and it flattens the containment story |
+| D · Monospace ASCII | One aligned box-drawing schematic in a `<pre>` | Most "engineered", but a fixed-width block scrolls on mobile and reads a touch toy/terminal; alignment is fragile to maintain |
+| **B · Nested containment** ✅ | Boxes-within-boxes: `Proxmox host → k3s VMs → k3s cluster`, with LXCs and disks alongside, ingress annotated, backup leaving off-site | **Chosen.** It's the only format that shows *what runs inside what* — the actual value of the exhibit. Reflows cleanly (flex), and the three nesting levels read at a glance with a faint tint on the innermost box |
+
+**Why B won.** The others render the topology as an *ordering* (tiers, or a
+left-to-right pipeline); only nesting renders it as *containment*, which is the
+honest shape of the system and the more interesting thing to show — the cluster
+runs on VMs, which run on the host, with the LXCs as host-level siblings outside
+k3s. It also carries the two facts the intro leans on: the Cloudflare-tunnel
+ingress ("no open ports") annotated on the entry arrows, and `restic` as the one
+path that leaves the premises.
+
+**The one live element.** The `Portfolio` node is marked as *this page* and its
+dot is wired to `[data-dot="cluster"]`, so `home.js` recolours it to real cluster
+health (green pulse / amber / red) — the same "this page monitors itself" thesis
+the right-hand telemetry aside carries, reused inside the diagram. Everything
+else is static typography. Respects `prefers-reduced-motion`.
+
+**Lesson for next time.** A literal diagram is not off-limits; a literal diagram
+*as the entire home layout* was. Scope the honest-but-showy idea to a section,
+build it in the page's own visual language, and it stops reading as a gimmick.
+
 ## Sources
 
 - Shuffle.dev — *Why Do Most AI-Generated Websites Look the Same?* (2026-01) — https://shuffle.dev/blog/2026/01/why-do-most-ai-generated-websites-look-the-same/
