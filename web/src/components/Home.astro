@@ -206,28 +206,28 @@
               <span class="cbox__tag">k3s cluster</span>
               <div class="vn-row">
                 <span class="row-lab">edge</span>
-                <span class="chip">Traefik</span>
+                <span class="chip" data-target="traefik"><span class="chip__dot" hidden aria-hidden="true"></span>Traefik</span>
                 <span class="chip">MetalLB <i>.200</i></span>
                 <span class="chip">cert-manager</span>
               </div>
               <div class="vn-row">
                 <span class="row-lab">apps</span>
-                <span class="chip">Gitea</span>
-                <span class="chip">Nextcloud</span>
-                <span class="chip">Immich</span>
-                <span class="chip">Collabora</span>
-                <span class="chip">Kiwix</span>
-                <span class="chip">File-Parser</span>
-                <span class="chip chip--here"><span class="chip__dot" data-dot="cluster" aria-hidden="true"></span>Portfolio <i>this page</i></span>
+                <span class="chip" data-target="gitea"><span class="chip__dot" hidden aria-hidden="true"></span>Gitea</span>
+                <span class="chip" data-target="nextcloud"><span class="chip__dot" hidden aria-hidden="true"></span>Nextcloud</span>
+                <span class="chip" data-target="immich"><span class="chip__dot" hidden aria-hidden="true"></span>Immich</span>
+                <span class="chip" data-target="collabora"><span class="chip__dot" hidden aria-hidden="true"></span>Collabora</span>
+                <span class="chip" data-target="kiwix"><span class="chip__dot" hidden aria-hidden="true"></span>Kiwix</span>
+                <span class="chip" data-target="file-parser"><span class="chip__dot" hidden aria-hidden="true"></span>File-Parser</span>
+                <span class="chip chip--here" data-target="portfolio"><span class="chip__dot" hidden aria-hidden="true"></span>Portfolio <i>this page</i></span>
               </div>
               <div class="vn-row">
                 <span class="row-lab">platform</span>
-                <span class="chip">ArgoCD</span>
+                <span class="chip" data-target="argocd"><span class="chip__dot" hidden aria-hidden="true"></span>ArgoCD</span>
                 <span class="chip">Sealed Secrets</span>
-                <span class="chip">Longhorn</span>
-                <span class="chip">VictoriaMetrics</span>
-                <span class="chip">Grafana</span>
-                <span class="chip">Alertmanager</span>
+                <span class="chip" data-target="longhorn"><span class="chip__dot" hidden aria-hidden="true"></span>Longhorn</span>
+                <span class="chip" data-target="victoriametrics"><span class="chip__dot" hidden aria-hidden="true"></span>VictoriaMetrics</span>
+                <span class="chip" data-target="grafana"><span class="chip__dot" hidden aria-hidden="true"></span>Grafana</span>
+                <span class="chip" data-target="alertmanager"><span class="chip__dot" hidden aria-hidden="true"></span>Alertmanager</span>
               </div>
             </div>
           </div>
@@ -245,9 +245,13 @@
         The highlighted node is this very page, running as one more pod inside the
         cluster. The boxes nest the way the system actually does: the k3s cluster on
         its control and worker VMs, those on the Proxmox host, the LXCs and the disks
-        alongside them. The only path that leaves the host is restic, pushing backups
-        off-site to Backblaze; the live figures in the panel above are scraped from the
-        same VictoriaMetrics sitting a box away.
+        alongside them. A node carries a <b>live dot</b> only when it's an actual
+        scrape target, coloured by that component's current health; the rest are
+        structural. The only path that leaves the host is restic, pushing backups
+        off-site to Backblaze; the live figures in the panel above are scraped from
+        the same VictoriaMetrics sitting a box away, which keeps 30 days of history,
+        while the datasets snapshot daily and restic ships an encrypted copy off-site
+        every night.
       </figcaption>
     </figure>
   </section>
@@ -431,6 +435,7 @@
   .chip--ext { border-style: dashed; background: transparent; }
   /* "this page" dot — home.js recolours it to live cluster health. */
   .chip__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+  .chip__dot[hidden] { display: none; }
   .chip__dot.is-ok { background: var(--ok); animation: home-pulse 2.6s ease-in-out infinite; }
   .chip__dot.is-warn { background: var(--warn); }
   .chip__dot.is-err { background: var(--err); }

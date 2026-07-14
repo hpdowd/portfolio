@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -76,6 +77,7 @@ func TestFetch(t *testing.T) {
 		"count(up)":      "22",
 		`count(ALERTS{alertstate="firing",severity=~"warning|critical",alertname!~"KubeCPUOvercommit|KubeMemoryOvercommit"})`: "3",
 		`sum(rate(portfolio_http_requests_total[5m]))`: "0.0633",
+		"min by (job) (up)":                            "1", // no job label in the mock → curated to nil
 	}
 	c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("query")
@@ -91,7 +93,7 @@ func TestFetch(t *testing.T) {
 		t.Fatalf("Fetch: %v", err)
 	}
 	want := Snapshot{TargetsUp: 22, TargetsTotal: 22, AlertsFiring: 3, RequestRate: 0.0633}
-	if got != want {
+	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Fetch = %+v, want %+v", got, want)
 	}
 }

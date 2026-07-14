@@ -32,6 +32,25 @@ function paintDot(state) {
   }
 }
 
+// Per-service health for the infrastructure diagram: a node's dot is shown only
+// when VictoriaMetrics actually reports that component (services[key] present),
+// then coloured by its up/down state. Unmonitored nodes stay dotless.
+function paintServices(services) {
+  for (const chip of document.querySelectorAll('[data-target]')) {
+    const dot = chip.querySelector('.chip__dot');
+    if (!dot) continue;
+    const key = chip.getAttribute('data-target');
+    const known = services && Object.prototype.hasOwnProperty.call(services, key);
+    dot.classList.remove('is-ok', 'is-err');
+    if (known) {
+      dot.hidden = false;
+      dot.classList.add(services[key] ? 'is-ok' : 'is-err');
+    } else {
+      dot.hidden = true;
+    }
+  }
+}
+
 // Rolling req/s sparkline, drawn into the aside's <polyline>.
 const rateHistory = [];
 function renderSparkline(rate) {
@@ -82,6 +101,7 @@ async function tick() {
   setText(q('[data-rate]'), c ? c.request_rate.toFixed(2) : '—');
   setText(q('[data-build]'), build || '—');
   if (c) renderSparkline(c.request_rate);
+  paintServices(c?.services);
 
   // Latest homelab commit.
   if (git?.commits?.length) {
