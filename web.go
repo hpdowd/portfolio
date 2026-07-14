@@ -33,12 +33,48 @@ func staticHandler() http.Handler {
 	}
 	files := http.FileServer(http.FS(sub))
 
+	// The pre-rendered branded 404 page (from src/pages/404.astro). If it's
+	// somehow absent, we fall back to the FileServer's plain-text 404.
+	notFound, _ := fs.ReadFile(sub, "404.html")
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, "/_astro/") {
 			w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
 		} else {
 			w.Header().Set("Cache-Control", "no-cache")
 		}
+		if notFound != nil {
+			w = &notFoundWriter{ResponseWriter: w, body: notFound}
+		}
 		files.ServeHTTP(w, r)
 	})
+}
+
+// notFoundWriter swaps the FileServer's plain-text "404 page not found" for the
+// site's branded 404 page, keeping a 404 status. It activates only when the
+// wrapped handler writes a 404; every other response passes through untouched.
+type notFoundWriter struct {
+	http.ResponseWriter
+	body      []byte
+	intercept bool
+}
+
+func (w *notFoundWriter) WriteHeader(code int) {
+	if code == http.StatusNotFound {
+		w.intercept = true
+		h := w.Header()
+		h.Set("Content-Type", "text/html; charset=utf-8")
+		h.Set("Cache-Control", "no-cache")
+		w.ResponseWriter.WriteHeader(http.StatusNotFound)
+		_, _ = w.ResponseWriter.Write(w.body)
+		return
+	}
+	w.ResponseWriter.WriteHeader(code)
+}
+
+func (w *notFoundWriter) Write(b []byte) (int, error) {
+	if w.intercept {
+		return len(b), nil // swallow the FileServer's default 404 body
+	}
+	return w.ResponseWriter.Write(b)
 }

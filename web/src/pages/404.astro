@@ -1,0 +1,45 @@
+---
+/**
+ * 404 — served (with a 404 status) by the Go static handler for any unknown
+ * path. Same type system as the rest of the site; deliberately tiny.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="404 — Henry Dowd"
+  description="That page doesn't exist."
+>
+  <article class="notfound">
+    <p class="notfound__code">404</p>
+    <h1>Nothing here.</h1>
+    <p class="notfound__lede">
+      That path doesn't resolve — much like a request to a service that isn't
+      scheduled. Let's route you back to something that is.
+    </p>
+    <nav class="notfound__links">
+      <a href="/">← Home</a>
+      <a href="/cv/">CV</a>
+      <a href="/about/">About</a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .notfound { font-family: var(--sans); max-width: 40rem; }
+  .notfound__code {
+    font-family: var(--mono); font-size: clamp(3rem, 12vw, 6rem); line-height: 1;
+    color: var(--accent); margin: 0 0 0.5rem; letter-spacing: -0.02em;
+  }
+  .notfound h1 {
+    font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 1rem; letter-spacing: -0.02em;
+  }
+  .notfound__lede {
+    font-family: var(--serif); font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+    line-height: 1.45; color: var(--ink-soft); margin: 0 0 2rem;
+  }
+  .notfound__links { display: flex; gap: 1.5rem; font-family: var(--mono); font-size: 0.9rem; }
+  .notfound__links a { color: var(--ink); text-decoration: none; }
+  .notfound__links a:hover { color: var(--accent); }
+  .notfound :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
