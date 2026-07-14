@@ -49,6 +49,7 @@
         <li><a href="#intro">About</a></li>
         <li><a href="#work">Projects</a></li>
         <li><a href="#approach">Skills</a></li>
+        <li><a href="#infra">Infrastructure</a></li>
       </ol>
       <p class="rail__note">Self-hosted on k3s.<br />This page runs on the same<br />platform it reports on.</p>
     </nav>
@@ -167,6 +168,89 @@
       </div>
     </aside>
   </div>
+
+  <section id="infra" class="infra" aria-labelledby="infra-h">
+    <h2 class="block__h" id="infra-h">Infrastructure</h2>
+    <p class="infra__intro">
+      All of this runs on a single Dell OptiPlex under my desk; Proxmox on the bare
+      metal, a two-node k3s cluster sitting on top. Traffic gets in two ways, from the
+      public internet through a Cloudflare tunnel with nothing forwarded and no port
+      open to the world, and from the house LAN through my own DNS. What follows is
+      the whole path it takes, from the request arriving down to the disk it lands on.
+    </p>
+
+    <figure class="v-nest-fig" role="group" aria-label="Homelab infrastructure as nested containment: the Proxmox host holds its hardware, the k3s control and worker VMs (which contain the k3s cluster of ingress, apps including this page, and platform services), and the WireGuard, Technitium and AMP LXCs alongside; public traffic enters via a Cloudflare tunnel and LAN traffic via Technitium DNS, and restic backs up off-site to Backblaze B2.">
+      <div class="v-nest">
+        <div class="vn-sources">
+          <div class="vn-src">
+            <span class="chip">Internet <i>henrydowd.dev</i></span>
+            <span class="vn-down" aria-hidden="true">↓</span>
+            <span class="vn-edge">Cloudflare tunnel · no open ports</span>
+          </div>
+          <div class="vn-src">
+            <span class="chip">LAN <i>*.lan</i></span>
+            <span class="vn-down" aria-hidden="true">↓</span>
+            <span class="vn-edge">Technitium DNS</span>
+          </div>
+        </div>
+        <div class="cbox cbox--host">
+          <span class="cbox__tag">Proxmox host · under the desk</span>
+          <div class="vn-row">
+            <span class="row-lab">hardware</span>
+            <span class="chip">i5-14500T <i>24 GB</i></span>
+            <span class="chip">ZFS RAID-1 <i>2×2 TB</i></span>
+          </div>
+          <div class="cbox cbox--vms">
+            <span class="cbox__tag">k3s VMs · control + worker</span>
+            <div class="cbox cbox--k3s">
+              <span class="cbox__tag">k3s cluster</span>
+              <div class="vn-row">
+                <span class="row-lab">edge</span>
+                <span class="chip">Traefik</span>
+                <span class="chip">MetalLB <i>.200</i></span>
+                <span class="chip">cert-manager</span>
+              </div>
+              <div class="vn-row">
+                <span class="row-lab">apps</span>
+                <span class="chip">Gitea</span>
+                <span class="chip">Nextcloud</span>
+                <span class="chip">Immich</span>
+                <span class="chip">Collabora</span>
+                <span class="chip">Kiwix</span>
+                <span class="chip">File-Parser</span>
+                <span class="chip chip--here"><span class="chip__dot" data-dot="cluster" aria-hidden="true"></span>Portfolio <i>this page</i></span>
+              </div>
+              <div class="vn-row">
+                <span class="row-lab">platform</span>
+                <span class="chip">ArgoCD</span>
+                <span class="chip">Sealed Secrets</span>
+                <span class="chip">Longhorn</span>
+                <span class="chip">VictoriaMetrics</span>
+                <span class="chip">Grafana</span>
+                <span class="chip">Alertmanager</span>
+              </div>
+            </div>
+          </div>
+          <div class="vn-row">
+            <span class="row-lab">lxcs</span>
+            <span class="chip chip--ext">WireGuard</span>
+            <span class="chip chip--ext">Technitium</span>
+            <span class="chip chip--ext">AMP</span>
+          </div>
+        </div>
+        <div class="vn-arrows" aria-hidden="true"><span>↓ restic</span></div>
+        <div class="vn-out"><span class="chip chip--ext">Backblaze B2 <i>off-site</i></span></div>
+      </div>
+      <figcaption class="infra__foot">
+        The highlighted node is this very page, running as one more pod inside the
+        cluster. The boxes nest the way the system actually does: the k3s cluster on
+        its control and worker VMs, those on the Proxmox host, the LXCs and the disks
+        alongside them. The only path that leaves the host is restic, pushing backups
+        off-site to Backblaze; the live figures in the panel above are scraped from the
+        same VictoriaMetrics sitting a box away.
+      </figcaption>
+    </figure>
+  </section>
 </div>
 
 <!-- Live wiring is a same-origin external module so the CSP stays script-src 'self'. -->
@@ -324,8 +408,67 @@
     .metric dd { justify-content: space-between; }
   }
 
+  /* ---- Infrastructure — nested-containment schematic (full-width, below the grid) ---- */
+  .infra { padding-top: 2.75rem; margin-top: 2.5rem; border-top: 1px solid var(--rule); }
+  .infra__intro {
+    font-family: var(--sans); font-size: 1.02rem; line-height: 1.6;
+    color: var(--ink); max-width: 44rem; margin: 0 0 2.25rem;
+  }
+  .v-nest-fig { margin: 0; }
+
+  /* Node chip */
+  .chip {
+    font-family: var(--mono); font-size: 0.78rem; line-height: 1.25;
+    padding: 0.38rem 0.62rem; border: 1px solid var(--rule);
+    background: var(--surface); color: var(--ink); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 0.42rem;
+  }
+  .chip i { font-style: normal; color: var(--ink-soft); }
+  .chip--here {
+    border-color: var(--accent); border-left-width: 3px;
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+  }
+  .chip--ext { border-style: dashed; background: transparent; }
+  /* "this page" dot — home.js recolours it to live cluster health. */
+  .chip__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+  .chip__dot.is-ok { background: var(--ok); animation: home-pulse 2.6s ease-in-out infinite; }
+  .chip__dot.is-warn { background: var(--warn); }
+  .chip__dot.is-err { background: var(--err); }
+
+  /* Nested containment: host > k3s VMs > cluster, with LXCs and disks alongside. */
+  .v-nest { font-family: var(--mono); }
+  .vn-sources { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  .vn-src { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+  .vn-edge { font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+  .vn-down { color: var(--ink-soft); font-size: 0.95rem; line-height: 1; }
+  .vn-arrows { display: flex; gap: 2.5rem; color: var(--ink-soft); font-size: 0.9rem; padding: 0.3rem 0.6rem; }
+  .cbox { position: relative; border: 1px solid var(--rule); padding: 1.5rem 0.9rem 0.9rem; }
+  .cbox--host { margin-top: 1.1rem; }
+  .cbox--vms { margin: 0.9rem 0; }
+  /* Innermost box gets a faint fill so the three nesting levels read at a glance. */
+  .cbox--k3s { margin: 0.9rem 0 0.2rem; background: color-mix(in srgb, var(--surface) 55%, transparent); }
+  .cbox__tag {
+    position: absolute; top: -0.62em; left: 0.85rem; background: var(--bg);
+    padding: 0 0.45rem; font-size: 0.66rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0.55rem 0; }
+  .vn-row:first-child { margin-top: 0; }
+  .vn-row:last-child { margin-bottom: 0; }
+  .row-lab {
+    font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-soft); width: 4.25rem; flex: none;
+  }
+  .vn-out { margin-top: 0.3rem; }
+
+  .infra__foot {
+    font-family: var(--mono); font-size: 0.72rem; line-height: 1.7;
+    color: var(--ink-soft); margin: 1.4rem 0 0; max-width: 46rem;
+  }
+  .infra__foot b { color: var(--ink); font-weight: 600; }
+
   @media (prefers-reduced-motion: reduce) {
-    .live__dot.is-ok { animation: none; }
+    .live__dot.is-ok, .chip__dot.is-ok { animation: none; }
     .index a { transition: none; }
   }
 </style>
