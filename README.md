@@ -30,18 +30,18 @@ appears as a monitored service in the very stack it surfaces.
                    Cloudflare ─ tunnel ─ Traefik Ingress
                               │  (routes :8080 only)
         ┌─────────────────────▼──────────────────────────┐
-        │  portfolio (one Go binary, one pod)             │
-        │                                                 │
-        │   :8080  ── /            embedded Astro site     │  ◀ public
-        │          └─ /api/status  curated JSON  ┐        │
-        │          └─ /api/git     curated JSON  │        │
-        │                                        │        │
-        │   :9090  ── /metrics  (Prometheus)     │        │  ◀ private
-        │          └─ /healthz  (k8s probes)     │        │     (scrape + probes)
-        └───────────────────────────┬───────────┼────────┘
-                                     │           │
-          cluster-internal, no auth  │           │  cluster-internal, anonymous
-                                     ▼           ▼
+        │  portfolio (one Go binary, one pod)            │
+        │                                                │
+        │   :8080  ── /            embedded Astro site   │  ◀ public
+        │          └─ /api/status  curated JSON  ┐       │
+        │          └─ /api/git     curated JSON  │       │
+        │                                        │       │
+        │   :9090  ── /metrics  (Prometheus)     │       │  ◀ private
+        │          └─ /healthz  (k8s probes)     │       │     (scrape + probes)
+        └───────────────────────────┬────────────┼───────┘
+                                    │            │
+          cluster-internal, no auth │            │  cluster-internal, anonymous
+                                    ▼            ▼
                          VictoriaMetrics      Gitea (public henry/homelab)
                          count(up==1), …      recent commits
 ```
