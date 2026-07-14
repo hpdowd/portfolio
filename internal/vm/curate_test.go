@@ -6,13 +6,13 @@ func TestCurateServices(t *testing.T) {
 	// Raw job labels as VictoriaMetrics might report them, mixed up/down, plus
 	// jobs that map to no diagram node (they must be dropped).
 	jobs := map[string]bool{
-		"portfolio":                         true,
-		"longhorn-backend-manager":          true,
+		"portfolio":                          true,
+		"longhorn-backend-manager":           true,
 		"vmsingle-vm-victoria-metrics-stack": true,
-		"vmalert":                           false, // one victoria job down -> canonical down
-		"grafana":                           true,
-		"node-exporter":                     true, // not a diagram node -> dropped
-		"kubelet":                           true, // dropped
+		"vmalert":                            false, // one victoria job down -> canonical down
+		"grafana":                            true,
+		"node-exporter":                      true, // not a diagram node -> dropped
+		"kubelet":                            true, // dropped
 	}
 	got := curateServices(jobs)
 
