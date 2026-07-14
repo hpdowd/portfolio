@@ -257,3 +257,135 @@ func (c *Client) vector(ctx context.Context, query string) ([]sample, error) {
 	}
 	return out, nil
 }
+
+// DayUptime is one day's platform availability (fraction 0..1). Avail is -1 when
+// that day has no data (e.g. beyond the 30-day TSDB retention).
+type DayUptime struct {
+	Date  string  `json:"date"` // YYYY-MM-DD (UTC)
+	Avail float64 `json:"avail"`
+}
+
+// Uptime is the availability history shown on the status page: a per-day strip
+// plus 1/7/30-day rollups. "Availability" is the fraction of scrape targets up,
+// averaged over the window — a whole-platform figure, not just this service.
+type Uptime struct {
+	Days  []DayUptime `json:"days"` // oldest first
+	Avg1  float64     `json:"avg_1d"`
+	Avg7  float64     `json:"avg_7d"`
+	Avg30 float64     `json:"avg_30d"`
+}
+
+// FetchUptime builds the availability history from a single range query: the
+// fraction of up targets, averaged per day (VictoriaMetrics does the daily
+// averaging via the subquery), over the last 30 days.
+func (c *Client) FetchUptime(ctx context.Context) (Uptime, error) {
+	const days = 30
+	end := time.Now().UTC().Truncate(24 * time.Hour)
+	start := end.Add(-days * 24 * time.Hour)
+
+	pts, err := c.queryRange(ctx,
+		`avg_over_time((count(up == 1) / count(up))[1d:10m])`,
+		start.Unix(), end.Unix(), 24*3600)
+	if err != nil {
+		return Uptime{}, err
+	}
+
+	var u Uptime
+	for _, p := range pts {
+		u.Days = append(u.Days, DayUptime{
+			Date:  time.Unix(p.t, 0).UTC().Format("2006-01-02"),
+			Avail: p.v,
+		})
+	}
+	u.Avg1 = meanAvail(u.Days, 1)
+	u.Avg7 = meanAvail(u.Days, 7)
+	u.Avg30 = meanAvail(u.Days, len(u.Days))
+	return u, nil
+}
+
+// meanAvail averages the availability of the last n days that actually have
+// data. Returns -1 if none do, so callers can render "no data" rather than 0%.
+func meanAvail(days []DayUptime, n int) float64 {
+	if n > len(days) {
+		n = len(days)
+	}
+	sum, count := 0.0, 0
+	for _, d := range days[len(days)-n:] {
+		if d.Avail >= 0 {
+			sum += d.Avail
+			count++
+		}
+	}
+	if count == 0 {
+		return -1
+	}
+	return sum / float64(count)
+}
+
+// point is one (timestamp, value) sample from a range query.
+type point struct {
+	t int64
+	v float64
+}
+
+// queryRange runs a range query and returns the first series' points. Only
+// fixed queries are ever passed in.
+func (c *Client) queryRange(ctx context.Context, query string, start, end, step int64) ([]point, error) {
+	q := url.Values{
+		"query": {query},
+		"start": {strconv.FormatInt(start, 10)},
+		"end":   {strconv.FormatInt(end, 10)},
+		"step":  {strconv.FormatInt(step, 10)},
+	}
+	endpoint := c.base + "/api/v1/query_range?" + q.Encode()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("victoriametrics: query_range %q: status %d", query, resp.StatusCode)
+	}
+
+	var body struct {
+		Status string `json:"status"`
+		Data   struct {
+			Result []struct {
+				Values [][2]json.RawMessage `json:"values"` // [[<ts>, "<float>"], ...]
+			} `json:"result"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("victoriametrics: decode: %w", err)
+	}
+	if body.Status != "success" {
+		return nil, fmt.Errorf("victoriametrics: query_range %q: status %q", query, body.Status)
+	}
+	if len(body.Data.Result) == 0 {
+		return nil, nil
+	}
+
+	raw := body.Data.Result[0].Values
+	out := make([]point, 0, len(raw))
+	for _, v := range raw {
+		var ts float64
+		if err := json.Unmarshal(v[0], &ts); err != nil {
+			return nil, fmt.Errorf("victoriametrics: ts: %w", err)
+		}
+		var val string
+		if err := json.Unmarshal(v[1], &val); err != nil {
+			return nil, fmt.Errorf("victoriametrics: value: %w", err)
+		}
+		f, err := strconv.ParseFloat(val, 64)
+		if err != nil {
+			return nil, fmt.Errorf("victoriametrics: parse %q: %w", val, err)
+		}
+		out = append(out, point{t: int64(ts), v: f})
+	}
+	return out, nil
+}

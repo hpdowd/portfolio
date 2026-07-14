@@ -39,6 +39,7 @@ type API struct {
 
 	status *cache.TTL[vm.Snapshot]
 	git    *cache.TTL[[]gitea.Commit]
+	uptime *cache.TTL[vm.Uptime]
 }
 
 // New wires the data clients and their caches.
@@ -69,6 +70,16 @@ func New(
 		return cs, err
 	}
 
+	// The 30-day availability history for the status page. Its own VM reachability
+	// is already covered by statusLoader's upstreamVM gauge, so it doesn't report
+	// separately. Not warmed (see Warm): it's lazy-loaded on the first /api/uptime
+	// request, since the status page is visited far less than the home page.
+	uptimeLoader := func() (vm.Uptime, error) {
+		ctx, cancel := context.WithTimeout(context.Background(), reqTimeout)
+		defer cancel()
+		return vmClient.FetchUptime(ctx)
+	}
+
 	// Seed both series at 0 so /metrics reports them from the first scrape,
 	// before any loader has run (see RegisterUpstreams). The loaders flip them to
 	// the observed value on each refresh.
@@ -79,6 +90,7 @@ func New(
 		version: version,
 		status:  cache.New(ttl, statusLoader),
 		git:     cache.New(ttl, gitLoader),
+		uptime:  cache.New(ttl, uptimeLoader),
 	}
 }
 
@@ -86,6 +98,7 @@ func New(
 func (a *API) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/status", a.handleStatus)
 	mux.HandleFunc("/api/git", a.handleGit)
+	mux.HandleFunc("/api/uptime", a.handleUptime)
 }
 
 // Warm refreshes every cached upstream so each one's reachability is observed
@@ -132,6 +145,23 @@ func (a *API) handleGit(w http.ResponseWriter, _ *http.Request) {
 	resp := gitResponse{Commits: []gitea.Commit{}}
 	if commits, ok := a.git.Get(); ok {
 		resp.Commits = commits
+		resp.Live = true
+	}
+	writeJSON(w, resp)
+}
+
+type uptimeResponse struct {
+	Uptime *vm.Uptime `json:"uptime"` // null until VictoriaMetrics answers the range query
+	Live   bool       `json:"live"`
+}
+
+// handleUptime returns the platform availability history for the status page.
+// Lazily loaded and cached; the first request may come back not-live while the
+// background load runs, then fills on the next poll.
+func (a *API) handleUptime(w http.ResponseWriter, _ *http.Request) {
+	var resp uptimeResponse
+	if u, ok := a.uptime.Get(); ok {
+		resp.Uptime = &u
 		resp.Live = true
 	}
 	writeJSON(w, resp)

@@ -1,0 +1,118 @@
+---
+/**
+ * Status — a public availability page for the homelab that serves this site.
+ * Reads /api/uptime (30-day history from VictoriaMetrics) and renders a per-day
+ * strip plus 1/7/30-day rollups. Live wiring is the same-origin module
+ * /status.js so the CSP stays script-src 'self'. Same type system as the rest.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Status — Henry Dowd"
+  description="Live platform availability for the self-hosted homelab that serves henrydowd.dev."
+>
+  <article class="statuspg">
+    <a class="statuspg__back" href="/">← Home</a>
+
+    <header class="statuspg__head">
+      <p class="statuspg__state">
+        <span class="sdot" data-dot-status aria-hidden="true"></span>
+        <span data-state>checking…</span>
+      </p>
+      <h1>Platform status</h1>
+      <p class="statuspg__lede">
+        Availability of the homelab that serves this page — the share of monitored
+        scrape targets up, from the same VictoriaMetrics the platform runs on.
+        Whole-cluster, not just this service.
+      </p>
+    </header>
+
+    <dl class="rollups">
+      <div><dt>24 hours</dt><dd data-roll="1">—</dd></div>
+      <div><dt>7 days</dt><dd data-roll="7">—</dd></div>
+      <div><dt>30 days</dt><dd data-roll="30">—</dd></div>
+    </dl>
+
+    <section class="history">
+      <div class="history__top">
+        <p class="history__head">Last 30 days</p>
+        <p class="legend" aria-hidden="true">
+          <span class="lswatch lswatch--ok"></span> operational
+          <span class="lswatch lswatch--warn"></span> degraded
+          <span class="lswatch lswatch--err"></span> down
+          <span class="lswatch lswatch--na"></span> no data
+        </p>
+      </div>
+      <div class="strip" data-strip role="img" aria-label="Daily availability for the last 30 days."></div>
+      <p class="history__foot" data-foot>
+        Availability is the mean fraction of up targets over each window. Metrics
+        are kept 30 days, so history reaches back one month.
+      </p>
+    </section>
+  </article>
+
+  <script type="module" src="/status.js"></script>
+</Base>
+
+<style>
+  .statuspg { font-family: var(--sans); max-width: 44rem; }
+  .statuspg__back { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft); text-decoration: none; }
+  .statuspg__back:hover { color: var(--accent); }
+  .statuspg__head { margin: 0.7rem 0 2rem; }
+  .statuspg__state {
+    font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 0.55rem; margin: 0 0 0.6rem;
+  }
+  .statuspg h1 { font-size: clamp(2.2rem, 6vw, 3rem); margin: 0 0 1rem; letter-spacing: -0.02em; }
+  .statuspg__lede {
+    font-family: var(--serif); font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+    line-height: 1.45; color: var(--ink-soft); margin: 0; max-width: 40rem;
+  }
+
+  .sdot { width: 10px; height: 10px; background: var(--ink-soft); flex: none; }
+  .sdot--ok { background: var(--ok); animation: spulse 2.6s ease-in-out infinite; }
+  .sdot--warn { background: var(--warn); }
+  .sdot--err { background: var(--err); }
+  .sdot--na { background: var(--ink-soft); }
+  @keyframes spulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .rollups { display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; margin: 0 0 2.5rem; }
+  .rollups div { display: flex; flex-direction: column; gap: 0.3rem; }
+  .rollups dt {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-soft); margin: 0;
+  }
+  .rollups dd {
+    font-family: var(--mono); font-size: 1.9rem; font-variant-numeric: tabular-nums;
+    margin: 0; line-height: 1; color: var(--ink);
+  }
+
+  .history { border-top: 1px solid var(--line); padding-top: 1.5rem; }
+  .history__top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem 1rem; }
+  .history__head {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft); margin: 0;
+  }
+  .legend { font-family: var(--mono); font-size: 0.66rem; color: var(--ink-soft); margin: 0; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+  .lswatch { width: 9px; height: 9px; display: inline-block; margin-left: 0.6rem; }
+  .lswatch:first-child { margin-left: 0; }
+  .lswatch--ok { background: var(--ok); }
+  .lswatch--warn { background: var(--warn); }
+  .lswatch--err { background: var(--err); }
+  .lswatch--na { background: var(--line); }
+
+  .strip { display: flex; flex-wrap: wrap; gap: 3px; margin: 1rem 0; }
+  /* Cells are injected by status.js, so they lack Astro's scope attribute —
+     target them with :global() under the (scoped) .strip container. */
+  .strip :global(.cell) { width: 15px; height: 30px; background: var(--line); }
+  .strip :global(.cell--ok) { background: var(--ok); }
+  .strip :global(.cell--warn) { background: var(--warn); }
+  .strip :global(.cell--err) { background: var(--err); }
+  .strip :global(.cell--na) { background: var(--line); }
+
+  .history__foot { font-family: var(--mono); font-size: 0.72rem; line-height: 1.6; color: var(--ink-soft); margin: 0.5rem 0 0; }
+
+  .statuspg :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .sdot--ok { animation: none; } }
+</style>
