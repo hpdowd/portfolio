@@ -6,8 +6,38 @@
  */
 import Base from '../layouts/Base.astro';
 import Home from '../components/Home.astro';
+
+// JSON-LD for the home page: the site itself plus its author, for rich results
+// and knowledge-graph eligibility. The Person mirrors the fuller one on /cv.
+const homeLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': 'https://henrydowd.dev/#website',
+      url: 'https://henrydowd.dev',
+      name: 'Henry Dowd',
+      description:
+        'Platform / DevOps / SRE portfolio, self-hosted on a Kubernetes homelab and reporting live telemetry from it.',
+      inLanguage: 'en',
+      author: { '@id': 'https://henrydowd.dev/#person' },
+    },
+    {
+      '@type': 'Person',
+      '@id': 'https://henrydowd.dev/#person',
+      name: 'Henry Dowd',
+      url: 'https://henrydowd.dev',
+      email: 'henry@dowd.ie',
+      jobTitle: 'Platform / DevOps / SRE engineer',
+      alumniOf: { '@type': 'CollegeOrUniversity', name: 'Maynooth University' },
+      knowsAbout: ['Kubernetes', 'GitOps', 'Linux', 'Platform Engineering', 'DevOps', 'Site Reliability Engineering', 'Observability'],
+      sameAs: ['https://github.com/hpdowd', 'https://www.linkedin.com/in/henrypdowd/'],
+    },
+  ],
+};
 ---
 
 <Base wide>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(homeLd)} />
   <Home />
 </Base>

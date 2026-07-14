@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Three static routes; hand-maintained (the site is small and dependency-free). -->
+<!-- Three static routes; hand-maintained (the site is small and dependency-free).
+     Bump <lastmod> when a page's content changes. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://henrydowd.dev/</loc></url>
-  <url><loc>https://henrydowd.dev/cv/</loc></url>
-  <url><loc>https://henrydowd.dev/about/</loc></url>
+  <url><loc>https://henrydowd.dev/</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://henrydowd.dev/cv/</loc><lastmod>2026-06-22</lastmod></url>
+  <url><loc>https://henrydowd.dev/about/</loc><lastmod>2026-06-22</lastmod></url>
 </urlset>
