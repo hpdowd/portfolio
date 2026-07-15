@@ -24,7 +24,7 @@ const personLd = {
   url: 'https://henrydowd.dev',
   email: 'henry@dowd.ie',
   description:
-    'Final-year BSc Pure Mathematics & Computer Science student at Maynooth University, targeting graduate platform engineering / DevOps / SRE roles.',
+    'BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate platform engineering / DevOps / SRE roles.',
   address: { '@type': 'PostalAddress', addressCountry: 'IE' },
   alumniOf: { '@type': 'CollegeOrUniversity', name: 'Maynooth University' },
   knowsAbout: ['Kubernetes', 'GitOps', 'Linux', 'Platform Engineering', 'DevOps', 'Site Reliability Engineering', 'Observability'],
@@ -34,7 +34,7 @@ const personLd = {
 
 <Base
   title="CV — Henry Dowd"
-  description="Henry Dowd — final-year BSc Pure Mathematics & Computer Science at Maynooth University, targeting graduate platform engineering / DevOps / SRE roles."
+  description="Henry Dowd, BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate platform engineering / DevOps / SRE roles."
 >
   <script type="application/ld+json" is:inline set:html={JSON.stringify(personLd)} />
   <article class="cv">
@@ -56,8 +56,8 @@ const personLd = {
     <section class="cv__sec">
       <h2>Profile</h2>
       <p>
-        Final-year BSc in Pure Mathematics &amp; Computer Science at Maynooth University
-        (graduating May 2026), with a year abroad at the University of Ottawa. I run a
+        BSc in Pure Mathematics &amp; Computer Science from Maynooth University,
+        with a year abroad at the University of Ottawa. I run a
         two-node k3s cluster on a single Proxmox host, built up from individual components
         and managed entirely through GitOps: ArgoCD reconciles the cluster against a git
         repository, with Sealed Secrets, Longhorn storage, MetalLB, and Traefik ingress.
