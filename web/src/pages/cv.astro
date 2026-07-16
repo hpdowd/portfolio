@@ -24,17 +24,17 @@ const personLd = {
   url: 'https://henrydowd.dev',
   email: 'henry@dowd.ie',
   description:
-    'BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate platform engineering / DevOps / SRE roles.',
+    'BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate infrastructure engineering / systems / SRE roles.',
   address: { '@type': 'PostalAddress', addressCountry: 'IE' },
   alumniOf: { '@type': 'CollegeOrUniversity', name: 'Maynooth University' },
-  knowsAbout: ['Kubernetes', 'GitOps', 'Linux', 'Platform Engineering', 'DevOps', 'Site Reliability Engineering', 'Observability'],
+  knowsAbout: ['Infrastructure Engineering', 'Linux', 'Computer Networking', 'Virtualization', 'Kubernetes', 'GitOps', 'Site Reliability Engineering', 'Observability'],
   sameAs: ['https://github.com/hpdowd', 'https://www.linkedin.com/in/henrypdowd/'],
 };
 ---
 
 <Base
   title="CV — Henry Dowd"
-  description="Henry Dowd, BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate platform engineering / DevOps / SRE roles."
+  description="Henry Dowd, BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate infrastructure engineering / systems / SRE roles."
 >
   <script type="application/ld+json" is:inline set:html={JSON.stringify(personLd)} />
   <article class="cv">
@@ -61,9 +61,9 @@ const personLd = {
         two-node k3s cluster on a single Proxmox host, built up from individual components
         and managed entirely through GitOps: ArgoCD reconciles the cluster against a git
         repository, with Sealed Secrets, Longhorn storage, MetalLB, and Traefik ingress.
-        Comfortable with Linux administration, networking, and container orchestration, and
-        I document architectural decisions and incidents as I go. Targeting graduate roles
-        in platform engineering, DevOps, SRE, or systems administration.
+        Comfortable with Linux administration, networking, storage, and container
+        orchestration, and I document architectural decisions and incidents as I go.
+        Targeting graduate roles in infrastructure engineering, systems, and SRE.
       </p>
     </section>
 

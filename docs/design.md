@@ -6,7 +6,7 @@ don't like it." Goal of this doc: ground the next direction in evidence, not
 vibes. It's the external-research companion to `portfolio-ui-overhaul.md` (which
 holds the concept wireframes) and feeds whatever direction we build next.*
 
-**The brief, restated:** a portfolio/CV for a **platform / DevOps / SRE** engineer
+**The brief, restated:** a portfolio/CV for an **infrastructure / systems** engineer
 that looks deliberately *designed* — not like an AI default, not like a SaaS
 template. Distinct, intuitive, professional, low-motion, honest about the system
 it runs on. Avoid the AI look **completely**.
