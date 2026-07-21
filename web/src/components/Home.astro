@@ -17,6 +17,7 @@
  * rules, no shadows, one reserved accent. Live wiring is the external module
  * public/home.js so the CSP stays inline-free.
  */
+import { social } from '../data/site';
 ---
 
 <div class="home">
@@ -32,9 +33,11 @@
         homelab · <span data-live-state>connecting…</span>
       </p>
       <nav class="contact" aria-label="Contact and links">
-        <a class="contact__row" href="mailto:henry@dowd.ie"><span class="contact__k">Email</span><span class="contact__v">henry@dowd.ie</span></a>
-        <a class="contact__row" href="https://github.com/hpdowd" target="_blank" rel="noopener"><span class="contact__k">GitHub</span><span class="contact__v">github.com/hpdowd</span></a>
-        <a class="contact__row" href="https://www.linkedin.com/in/henrypdowd/" target="_blank" rel="noopener"><span class="contact__k">LinkedIn</span><span class="contact__v">in/henrypdowd</span></a>
+        {social.map(({ key, href, value, external }) => (
+          <a class="contact__row" href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+            <span class="contact__k">{key}</span><span class="contact__v">{value}</span>
+          </a>
+        ))}
         <a class="contact__row" href="/cv/"><span class="contact__k">CV</span><span class="contact__v">the full CV →</span></a>
         <a class="contact__row" href="/about/"><span class="contact__k">About</span><span class="contact__v">more about me →</span></a>
         <a class="contact__row" href="/status/"><span class="contact__k">Status</span><span class="contact__v">live platform status →</span></a>
@@ -55,7 +58,7 @@
       <p class="rail__note">Self-hosted on k3s.<br />This page runs on the same<br />platform it reports on.</p>
     </nav>
 
-    <main class="body">
+    <div class="body">
       <section id="intro" class="block">
         <h2 class="block__h">About</h2>
         <p class="lede">
@@ -73,7 +76,7 @@
         <article class="entry">
           <div class="entry__head">
             <h3><a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">Homelab platform</a></h3>
-            <p class="entry__meta">k3s · ArgoCD · VictoriaMetrics · Gitea</p>
+            <p class="entry__meta">Proxmox · k3s · ArgoCD · VictoriaMetrics</p>
           </div>
           <p>
             A Kubernetes cluster I run at home on Proxmox. It's all GitOps: I push
@@ -142,9 +145,10 @@
         </dl>
       </section>
 
-    </main>
+    </div>
 
     <aside class="aside" aria-label="Live homelab telemetry">
+      <div class="aside__inner">
       <div class="readout">
         <p class="readout__head">
           <span class="live__dot" data-dot="cluster" aria-hidden="true"></span> live · self-monitored
@@ -167,6 +171,7 @@
       <div class="latest">
         <p class="readout__head">latest change</p>
         <p class="latest__body" data-latest>—</p>
+      </div>
       </div>
     </aside>
   </div>
@@ -297,9 +302,10 @@
   .tagline {
     font-family: var(--serif);
     font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    line-height: 1.3;
     color: var(--ink-soft);
-    margin: 0.7rem 0 0;
-    max-width: 26rem;
+    margin: 0.55rem 0 0;
+    max-width: 40rem;
   }
   .badge {
     font-family: var(--mono);
@@ -330,12 +336,19 @@
 
   @media (min-width: 66rem) {
     .grid {
-      grid-template-columns: 11rem minmax(0, 1fr) 15rem;
+      grid-template-columns: 11rem minmax(0, 1fr) 16rem;
       grid-template-areas: "rail body aside";
-      gap: clamp(2rem, 4vw, 3.5rem);
+      gap: clamp(2rem, 4vw, 3.25rem);
     }
     .rail { display: block; position: sticky; top: 1.5rem; }
-    .aside { position: sticky; top: 1.5rem; }
+    /* The aside stretches to the full grid-row height so its left hairline
+       reads as a continuous "instrument rail"; the panel itself is pinned. */
+    .aside {
+      align-self: stretch;
+      border-left: 1px solid var(--rule);
+      padding-left: clamp(1.25rem, 1.8vw, 1.75rem);
+    }
+    .aside__inner { position: sticky; top: 1.5rem; }
   }
 
   /* ---- Left rail: section index ---- */
@@ -387,7 +400,6 @@
   .contact__k { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
   .contact__v { font-family: var(--mono); font-size: 0.88rem; color: var(--ink); }
   .contact__row:hover .contact__v { color: var(--accent); }
-  .home a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
   /* ---- Right aside: live telemetry ---- */
   .readout { border-top: 2px solid var(--accent); padding-top: 0.8rem; }

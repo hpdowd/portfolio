@@ -2,19 +2,12 @@
 //
 // Same-origin external module (not inline) so the CSP stays script-src 'self'.
 // Reads /api/uptime and paints the 30-day availability strip, the 1/7/30-day
-// rollups, and the overall state line.
+// rollups, and the overall state line. Shared fetch/DOM primitives come from
+// ./lib.js.
+
+import { q, getJSON } from './lib.js';
 
 const POLL_MS = 30000;
-const q = (sel) => document.querySelector(sel);
-
-async function getJSON(path) {
-  try {
-    const res = await fetch(path, { headers: { Accept: 'application/json' } });
-    return res.ok ? await res.json() : null;
-  } catch {
-    return null;
-  }
-}
 
 // avail is a 0..1 fraction, or negative for "no data".
 function pct(v) {

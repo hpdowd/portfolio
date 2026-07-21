@@ -1,0 +1,59 @@
+---
+/**
+ * PageNav — the top-of-page navigation shared by every reading page (about /
+ * cv / status / 404). Replaces the four hand-rolled "← Home" back links and
+ * fixes the dead ends: from any subpage you can reach the others directly.
+ *
+ * Layout: back-link anchored left, section switcher right-aligned, the whole
+ * row seated under a hairline rule so it reads as a deliberate header band.
+ * Pass `current` to mark the active page (aria-current) and de-emphasise it.
+ */
+interface Props {
+  current?: 'cv' | 'about' | 'status';
+}
+const { current } = Astro.props;
+
+const links: { key: NonNullable<Props['current']>; href: string; label: string }[] = [
+  { key: 'cv', href: '/cv/', label: 'CV' },
+  { key: 'about', href: '/about/', label: 'About' },
+  { key: 'status', href: '/status/', label: 'Status' },
+];
+---
+
+<nav class="pagenav" aria-label="Site sections">
+  <a class="pagenav__home" href="/">← Home</a>
+  <span class="pagenav__rail">
+    {links.map(({ key, href, label }, i) => (
+      <Fragment>
+        {i > 0 && <span class="pagenav__sep" aria-hidden="true">·</span>}
+        {key === current ? (
+          <span class="pagenav__here" aria-current="page">{label}</span>
+        ) : (
+          <a href={href}>{label}</a>
+        )}
+      </Fragment>
+    ))}
+  </span>
+</nav>
+
+<style>
+  .pagenav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 1.6rem;
+  }
+  .pagenav__home { color: var(--ink); text-decoration: none; }
+  .pagenav__rail { display: flex; align-items: baseline; gap: 0.55rem; }
+  .pagenav__rail a { color: var(--ink); text-decoration: none; }
+  .pagenav a:hover { color: var(--accent); }
+  .pagenav__sep { color: var(--ink-soft); }
+  /* Current page: present but de-emphasised against its siblings. */
+  .pagenav__here { color: var(--ink-soft); }
+</style>

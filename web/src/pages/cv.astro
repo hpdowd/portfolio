@@ -6,6 +6,8 @@
  * web/public/resume.pdf and be linked from the header once added.
  */
 import Base from '../layouts/Base.astro';
+import PageNav from '../components/PageNav.astro';
+import { personLd } from '../data/site';
 
 const skills: [string, string][] = [
   ['Containers & GitOps', 'Kubernetes (k3s), Docker, Helm, ArgoCD, Longhorn, MetalLB, Traefik, Sealed Secrets'],
@@ -15,35 +17,23 @@ const skills: [string, string][] = [
   ['Languages & Tools', 'Python, Java, C, Bash, SQL; Git, Gitea, Let’s Encrypt, Technitium DNS, LaTeX'],
 ];
 
-// JSON-LD Person, emitted on the CV for rich-result eligibility. Kept in sync
-// with the visible CV content above.
-const personLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: 'Henry Dowd',
-  url: 'https://henrydowd.dev',
-  email: 'henry@dowd.ie',
-  description:
-    'BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate infrastructure engineering / systems / SRE roles.',
-  address: { '@type': 'PostalAddress', addressCountry: 'IE' },
-  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Maynooth University' },
-  knowsAbout: ['Infrastructure Engineering', 'Linux', 'Computer Networking', 'Virtualization', 'Kubernetes', 'GitOps', 'Site Reliability Engineering', 'Observability'],
-  sameAs: ['https://github.com/hpdowd', 'https://www.linkedin.com/in/henrypdowd/'],
-};
+// JSON-LD Person, emitted on the CV for rich-result eligibility. Built from the
+// shared identity source (src/data/site.ts), same node as the home @graph.
+const cvPersonLd = personLd();
 ---
 
 <Base
   title="CV — Henry Dowd"
   description="Henry Dowd, BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate infrastructure engineering / systems / SRE roles."
 >
-  <script type="application/ld+json" is:inline set:html={JSON.stringify(personLd)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(cvPersonLd)} />
   <article class="cv">
+    <PageNav current="cv" />
     <header class="cv__head">
-      <div class="cv__headtop">
-        <a class="cv__back" href="/">← Home</a>
+      <div class="cv__namerow">
+        <h1>Henry Dowd</h1>
         <a class="cv__pdf" href="/resume.pdf" download>Download PDF ↓</a>
       </div>
-      <h1>Henry Dowd</h1>
       <p class="cv__contact">
         Ireland<span class="sep">·</span>
         <a href="mailto:henry@dowd.ie">henry@dowd.ie</a><span class="sep">·</span>
@@ -156,14 +146,12 @@ const personLd = {
 
 <style>
   .cv { font-family: var(--sans); }
-  .cv__headtop { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-  .cv__back { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft); text-decoration: none; }
-  .cv__back:hover { color: var(--accent); }
+  .cv__namerow { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem 1rem; flex-wrap: wrap; }
   .cv__pdf { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid var(--line); padding: 0.3rem 0.7rem; }
   .cv__pdf:hover { border-color: var(--accent); }
 
   .cv__head { margin-bottom: 0.5rem; }
-  .cv__head h1 { font-size: clamp(2.4rem, 6vw, 3.4rem); margin: 0.7rem 0 0.6rem; letter-spacing: -0.02em; }
+  .cv__head h1 { font-size: clamp(2.4rem, 6vw, 3.4rem); margin: 0 0 0.6rem; letter-spacing: -0.02em; }
   .cv__contact { font-family: var(--mono); font-size: 0.84rem; color: var(--ink-soft); margin: 0; line-height: 1.9; }
   .cv__contact a { color: var(--ink); text-decoration: none; }
   .cv__contact a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
@@ -198,5 +186,4 @@ const personLd = {
   .cv__entry a, .cv p a { color: var(--accent); text-decoration: none; word-break: break-word; }
   .cv__entry a:hover, .cv p a:hover { text-decoration: underline; text-underline-offset: 3px; }
   .cv p { line-height: 1.62; margin: 0; }
-  .cv :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 </style>

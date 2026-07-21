@@ -6,35 +6,12 @@
  */
 import Base from '../layouts/Base.astro';
 import Home from '../components/Home.astro';
+import { homeGraphLd } from '../data/site';
 
 // JSON-LD for the home page: the site itself plus its author, for rich results
-// and knowledge-graph eligibility. The Person mirrors the fuller one on /cv.
-const homeLd = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'WebSite',
-      '@id': 'https://henrydowd.dev/#website',
-      url: 'https://henrydowd.dev',
-      name: 'Henry Dowd',
-      description:
-        'Infrastructure-engineering portfolio, self-hosted on a Kubernetes homelab and reporting live telemetry from it.',
-      inLanguage: 'en',
-      author: { '@id': 'https://henrydowd.dev/#person' },
-    },
-    {
-      '@type': 'Person',
-      '@id': 'https://henrydowd.dev/#person',
-      name: 'Henry Dowd',
-      url: 'https://henrydowd.dev',
-      email: 'henry@dowd.ie',
-      jobTitle: 'Infrastructure engineer',
-      alumniOf: { '@type': 'CollegeOrUniversity', name: 'Maynooth University' },
-      knowsAbout: ['Infrastructure Engineering', 'Linux', 'Computer Networking', 'Virtualization', 'Kubernetes', 'GitOps', 'Site Reliability Engineering', 'Observability'],
-      sameAs: ['https://github.com/hpdowd', 'https://www.linkedin.com/in/henrypdowd/'],
-    },
-  ],
-};
+// and knowledge-graph eligibility. Built from the shared identity source in
+// src/data/site.ts so it can't drift from the CV's Person node.
+const homeLd = homeGraphLd();
 ---
 
 <Base wide>

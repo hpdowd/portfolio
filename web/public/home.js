@@ -5,30 +5,18 @@
 // figures into the masthead badge and the right-hand telemetry aside, as plain
 // text/typography — never a separate dashboard. Also renders a small req/s
 // sparkline from the rolling poll history and a "latest change" line.
+//
+// Shared fetch/DOM primitives come from ./lib.js.
+
+import { q, getJSON, setText, applyDotState } from './lib.js';
 
 const INTERVAL_MS = 5000;
 const MAX_POINTS = 40; // ~3.3 min of req/s history at the poll interval
-
-const q = (sel) => document.querySelector(sel);
-
-async function getJSON(path) {
-  try {
-    const res = await fetch(path, { headers: { Accept: 'application/json' } });
-    return res.ok ? await res.json() : null;
-  } catch {
-    return null;
-  }
-}
-
-function setText(el, next) {
-  // Write only on change so the aria-live regions don't re-announce.
-  if (el && el.textContent !== next) el.textContent = next;
-}
+const DOT_STATES = ['ok', 'warn', 'err'];
 
 function paintDot(state) {
   for (const dot of document.querySelectorAll('[data-dot="cluster"]')) {
-    dot.classList.remove('is-ok', 'is-warn', 'is-err');
-    dot.classList.add(`is-${state}`);
+    applyDotState(dot, 'is', state, DOT_STATES);
   }
 }
 
@@ -41,12 +29,12 @@ function paintServices(services) {
     if (!dot) continue;
     const key = chip.getAttribute('data-target');
     const known = services && Object.prototype.hasOwnProperty.call(services, key);
-    dot.classList.remove('is-ok', 'is-err');
     if (known) {
       dot.hidden = false;
-      dot.classList.add(services[key] ? 'is-ok' : 'is-err');
+      applyDotState(dot, 'is', services[key] ? 'ok' : 'err', DOT_STATES);
     } else {
       dot.hidden = true;
+      dot.classList.remove('is-ok', 'is-warn', 'is-err');
     }
   }
 }

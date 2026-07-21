@@ -5,6 +5,7 @@
  * starting point; edit it to sound like you.
  */
 import Base from '../layouts/Base.astro';
+import PageNav from '../components/PageNav.astro';
 ---
 
 <Base
@@ -12,7 +13,7 @@ import Base from '../layouts/Base.astro';
   description="A bit about Henry Dowd, a Pure Mathematics & Computer Science graduate of Maynooth focused on infrastructure engineering, and how this self-hosted site is built."
 >
   <article class="about">
-    <a class="about__back" href="/">← Home</a>
+    <PageNav current="about" />
     <h1>About</h1>
 
     <p class="lede">
@@ -48,9 +49,7 @@ import Base from '../layouts/Base.astro';
 
 <style>
   .about { font-family: var(--sans); max-width: 42rem; }
-  .about__back { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft); text-decoration: none; }
-  .about__back:hover { color: var(--accent); }
-  .about h1 { font-size: clamp(2.4rem, 6vw, 3.2rem); margin: 0.7rem 0 1.25rem; letter-spacing: -0.02em; }
+  .about h1 { font-size: clamp(2.4rem, 6vw, 3.2rem); margin: 0 0 1.25rem; letter-spacing: -0.02em; }
   .about .lede {
     font-family: var(--serif); font-size: clamp(1.3rem, 2.6vw, 1.6rem);
     line-height: 1.45; color: var(--ink); margin: 0 0 1.5rem;
@@ -61,6 +60,5 @@ import Base from '../layouts/Base.astro';
     margin: 2.25rem 0 1rem; padding-top: 1.75rem; border-top: 1px solid var(--line);
   }
   .about p { line-height: 1.65; margin: 0 0 1.1rem; }
-  .about a:not(.about__back) { color: var(--accent); text-underline-offset: 3px; }
-  .about :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .about a { color: var(--accent); text-underline-offset: 3px; }
 </style>

@@ -1,24 +1,27 @@
 /*
  * Design tokens + base styles.
  *
- * Direction: "editorial + live status strip" — a restrained, document-like
- * page (warm paper, ink type, generous measure) with one band of live,
- * monospace telemetry. The whole visual identity lives in these tokens; change
- * them here, not in the components.
+ * Direction: "Swiss / editorial, mono-led" — a restrained, document-like page
+ * (warm paper, ink serif, generous measure) with monospace for everything
+ * systemic (labels, numbers, nav, live telemetry). Zero radius, hairline rules,
+ * no shadows, one reserved accent. The whole visual identity lives in these
+ * tokens; change them here, not in the components. Per-page layout lives in each
+ * page's scoped <style>; this file holds only tokens and cross-page chrome.
  */
 
 :root {
-  /* Palette — Gruvbox light: warm cream paper, dark ink, earthy accents. */
-  --bg: #fbf1c7;
-  --surface: #f2e5bc;
+  /* Palette — Gruvbox light, neutralised: warm off-white paper (the yellow
+     pulled back), dark ink, earthy accents carry the Gruvbox character. */
+  --bg: #f6f2e9;
+  --surface: #ece6d9;
   --ink: #3c3836;
-  --ink-soft: #7c6f64;
-  --line: #d5c4a1;
-  --accent: #427b58;
+  --ink-soft: #6f645a;
+  --line: #d7ccba;
+  --accent: #3c6f50;
 
-  /* Status colours (Gruvbox) */
-  --ok: #79740e;
-  --warn: #b57614;
+  /* Status colours (Gruvbox, darkened to clear WCAG AA 4.5:1 on --surface) */
+  --ok: #6b670c;
+  --warn: #8c5b0f;
   --err: #9d0006;
 
   /* Type system — one rule across every page: serif for headings + anything
@@ -28,7 +31,6 @@
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, monospace;
 
   --measure: 56rem;
-  --radius: 12px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -73,72 +75,25 @@ a { color: var(--accent); text-underline-offset: 3px; }
 
 h1, h2, h3 { font-family: var(--serif); line-height: 1.2; letter-spacing: -0.01em; }
 
-/* ---- Hero ---------------------------------------------------------------- */
-.hero { margin-bottom: 2.5rem; }
-.kicker {
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin: 0 0 0.5rem;
-}
-.hero h1 { font-size: clamp(2.4rem, 7vw, 3.6rem); margin: 0 0 0.75rem; }
-.lede { font-size: 1.15rem; color: var(--ink-soft); max-width: 44rem; margin: 0 0 1.25rem; }
+/* One focus ring for the whole site (previously copy-pasted into every page). */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-.links { display: flex; gap: 1.25rem; flex-wrap: wrap; font-family: var(--mono); font-size: 0.95rem; }
-
-/* ---- Live status strip --------------------------------------------------- */
-.status {
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+/* ---- Skip link ----------------------------------------------------------- */
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -3rem;
+  z-index: 10;
   background: var(--surface);
-  padding: 1rem 1.25rem 1.25rem;
-  margin: 2rem 0;
-}
-.status__head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
-.status__head h2 { font-size: 1rem; margin: 0; font-family: var(--mono); font-weight: 600; }
-.status__meta { margin-left: auto; font-family: var(--mono); font-size: 0.78rem; color: var(--ink-soft); }
-
-.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-soft); flex: none; }
-.dot--ok { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent); }
-.dot--warn { background: var(--warn); box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 22%, transparent); }
-.dot--err { background: var(--err); box-shadow: 0 0 0 3px color-mix(in srgb, var(--err) 22%, transparent); }
-
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: 0.75rem; }
-.tile { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0; }
-.tile__v { font-family: var(--mono); font-size: 1.7rem; font-variant-numeric: tabular-nums; }
-.tile__l { font-size: 0.78rem; color: var(--ink-soft); }
-
-/* ---- Git activity -------------------------------------------------------- */
-.git { margin: 2.5rem 0; }
-.git h2 { font-size: 1.1rem; margin: 0 0 1rem; }
-.commits { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; }
-.commits__empty { color: var(--ink-soft); font-family: var(--mono); font-size: 0.9rem; }
-.commit {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.25rem 0.85rem;
-  align-items: baseline;
-  padding-bottom: 0.65rem;
-  border-bottom: 1px solid var(--line);
-}
-.commit__sha { font-family: var(--mono); font-size: 0.85rem; color: var(--accent); text-decoration: none; }
-.commit__sha:hover { text-decoration: underline; }
-.commit__msg { font-size: 0.98rem; }
-.commit__meta { grid-column: 2; font-size: 0.8rem; color: var(--ink-soft); font-family: var(--mono); }
-
-/* ---- Long-form pages (CV / about) ---------------------------------------- */
-.prose h2 { margin-top: 2.5rem; border-bottom: 1px solid var(--line); padding-bottom: 0.35rem; }
-.prose ul { padding-left: 1.1rem; }
-.note {
-  font-size: 0.85rem;
-  color: var(--ink-soft);
+  color: var(--ink);
   font-family: var(--mono);
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line);
+  text-decoration: none;
+  transition: top 0.15s ease;
 }
+.skip-link:focus { top: 0.75rem; }
 
 /* ---- Site chrome --------------------------------------------------------- */
 .footer {

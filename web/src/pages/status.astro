@@ -6,6 +6,7 @@
  * /status.js so the CSP stays script-src 'self'. Same type system as the rest.
  */
 import Base from '../layouts/Base.astro';
+import PageNav from '../components/PageNav.astro';
 ---
 
 <Base
@@ -13,7 +14,7 @@ import Base from '../layouts/Base.astro';
   description="Live platform availability for the self-hosted homelab that serves henrydowd.dev."
 >
   <article class="statuspg">
-    <a class="statuspg__back" href="/">← Home</a>
+    <PageNav current="status" />
 
     <header class="statuspg__head">
       <p class="statuspg__state">
@@ -57,9 +58,7 @@ import Base from '../layouts/Base.astro';
 
 <style>
   .statuspg { font-family: var(--sans); max-width: 44rem; }
-  .statuspg__back { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft); text-decoration: none; }
-  .statuspg__back:hover { color: var(--accent); }
-  .statuspg__head { margin: 0.7rem 0 2rem; }
+  .statuspg__head { margin: 0 0 2rem; }
   .statuspg__state {
     font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft);
     display: inline-flex; align-items: center; gap: 0.55rem; margin: 0 0 0.6rem;
@@ -113,6 +112,5 @@ import Base from '../layouts/Base.astro';
 
   .history__foot { font-family: var(--mono); font-size: 0.72rem; line-height: 1.6; color: var(--ink-soft); margin: 0.5rem 0 0; }
 
-  .statuspg :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) { .sdot--ok { animation: none; } }
 </style>
