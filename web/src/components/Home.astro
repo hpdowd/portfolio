@@ -26,21 +26,22 @@ import { social } from '../data/site';
       <p class="eyebrow">Infrastructure · Systems · Linux</p>
       <h1 class="name">Henry Dowd</h1>
       <p class="tagline">I build and run infrastructure from the bare metal up.</p>
-    </div>
-    <div class="masthead__side">
-      <p class="badge" aria-live="polite">
-        <span class="live__dot" data-dot="cluster" aria-hidden="true"></span>
-        homelab · <span data-live-state>connecting…</span>
-      </p>
-      <nav class="contact" aria-label="Contact and links">
+      <nav class="social" aria-label="Contact">
         {social.map(({ key, href, value, external }) => (
-          <a class="contact__row" href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
-            <span class="contact__k">{key}</span><span class="contact__v">{value}</span>
+          <a class="social__item" href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+            <span class="social__k">{key}</span>
+            <span class="social__v">{value}</span>
           </a>
         ))}
-        <a class="contact__row" href="/cv/"><span class="contact__k">CV</span><span class="contact__v">the full CV →</span></a>
-        <a class="contact__row" href="/about/"><span class="contact__k">About</span><span class="contact__v">more about me →</span></a>
-        <a class="contact__row" href="/status/"><span class="contact__k">Status</span><span class="contact__v">live platform status →</span></a>
+      </nav>
+    </div>
+    <div class="masthead__side">
+      <nav class="linknav" aria-label="Portfolio pages">
+        <a href="/cv/">CV</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="/about/">About</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="/status/">Status</a>
       </nav>
     </div>
   </header>
@@ -73,7 +74,11 @@ import { social } from '../data/site';
       <section id="work" class="block">
         <h2 class="block__h">Projects</h2>
 
-        <article class="entry">
+        <article class="entry entry--featured">
+          <p class="entry__kicker">
+            <span class="live__dot" data-dot="cluster" aria-hidden="true"></span>
+            The platform this page runs on
+          </p>
           <div class="entry__head">
             <h3><a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">Homelab platform</a></h3>
             <p class="entry__meta">Proxmox · k3s · ArgoCD · VictoriaMetrics</p>
@@ -150,8 +155,9 @@ import { social } from '../data/site';
     <aside class="aside" aria-label="Live homelab telemetry">
       <div class="aside__inner">
       <div class="readout">
-        <p class="readout__head">
-          <span class="live__dot" data-dot="cluster" aria-hidden="true"></span> live · self-monitored
+        <p class="readout__head" aria-live="polite">
+          <span class="live__dot" data-dot="cluster" aria-hidden="true"></span>
+          <span data-live-state>connecting…</span> · self-monitored
         </p>
         <dl class="metrics">
           <div class="metric metric--lead">
@@ -307,13 +313,6 @@ import { social } from '../data/site';
     margin: 0.55rem 0 0;
     max-width: 40rem;
   }
-  .badge {
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    color: var(--ink-soft);
-    margin: 0.4rem 0 0;
-    display: inline-flex; align-items: center; gap: 0.5rem;
-  }
   .live__dot { width: 9px; height: 9px; background: var(--ink-soft); flex: none; }
   .live__dot.is-ok { background: var(--ok); animation: home-pulse 2.6s ease-in-out infinite; }
   .live__dot.is-warn { background: var(--warn); }
@@ -381,8 +380,20 @@ import { social } from '../data/site';
   .entry h3 a { color: var(--ink); text-decoration: none; }
   .entry h3 a:hover { color: var(--accent); }
   .entry h3 a[target="_blank"]::after { content: " ↗"; color: var(--ink-soft); font-size: 0.7em; }
-  .entry__meta { font-family: var(--serif); font-style: italic; font-size: 0.98rem; color: var(--accent); margin: 0.4rem 0 0; }
-  .entry p { font-family: var(--sans); font-size: 1.02rem; line-height: 1.6; margin: 0; color: var(--ink); }
+  /* Tech tokens read as a clean mono stack line; muted so the accent stays a signal. */
+  .entry__meta { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.02em; color: var(--ink-soft); margin: 0.5rem 0 0; }
+  /* Body prose only — scoped to the entry's own direct <p> so it can't reach the
+     meta (a <p> inside .entry__head) or the kicker, both of which are mono. */
+  .entry > p:not(.entry__kicker) { font-family: var(--sans); font-size: 1.02rem; line-height: 1.6; margin: 0; color: var(--ink); }
+
+  /* Flagship: the platform the whole page is about. A live-tinted kicker lifts
+     it out of the equal-weight stack and ties it to the telemetry — the dot
+     shares the cluster's live state, so it pulses the same colour as the panel. */
+  .entry__kicker {
+    font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft);
+    margin: 0 0 0.8rem; display: flex; align-items: center; gap: 0.5rem;
+  }
 
   .skills { margin: 0; }
   .skills div { display: grid; grid-template-columns: minmax(0, 9rem) 1fr; gap: 0.5rem 1.5rem; padding: 0.65rem 0; border-top: 1px solid var(--rule); }
@@ -390,16 +401,23 @@ import { social } from '../data/site';
   .skills dt { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
   .skills dd { margin: 0; font-family: var(--mono); font-size: 0.95rem; }
 
-  .masthead__side { min-width: 15rem; }
-  .contact { margin: 1.1rem 0 0; }
-  .contact__row {
-    display: grid; grid-template-columns: 5rem 1fr; gap: 0.9rem; align-items: baseline;
-    padding: 0.5rem 0; border-top: 1px solid var(--rule); text-decoration: none;
+  /* The page switcher (shared .linknav) sits top-right, aligned with the eyebrow. */
+  .masthead__side { padding-top: 0.15rem; }
+
+  /* Social links: a horizontal contact byline under the tagline — label over
+     value, set in a row. Deliberately unlike the boxed portfolio list on the
+     right, so the two groups read as different kinds of link. */
+  .social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem 2.5rem;
+    margin-top: 2rem;
+    font-family: var(--mono);
   }
-  .contact__row:last-child { border-bottom: 1px solid var(--rule); }
-  .contact__k { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
-  .contact__v { font-family: var(--mono); font-size: 0.88rem; color: var(--ink); }
-  .contact__row:hover .contact__v { color: var(--accent); }
+  .social__item { display: inline-flex; flex-direction: column; gap: 0.22rem; text-decoration: none; }
+  .social__k { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
+  .social__v { font-size: 0.92rem; color: var(--ink); }
+  .social__item:hover .social__v { color: var(--accent); }
 
   /* ---- Right aside: live telemetry ---- */
   .readout { border-top: 2px solid var(--accent); padding-top: 0.8rem; }

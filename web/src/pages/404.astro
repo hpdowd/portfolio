@@ -8,11 +8,12 @@ import PageNav from '../components/PageNav.astro';
 ---
 
 <Base
+  wide
   title="404 — Henry Dowd"
   description="That page doesn't exist."
 >
-  <article class="notfound">
-    <PageNav />
+  <PageNav />
+  <article class="notfound reading">
     <p class="notfound__code">404</p>
     <h1>Nothing here.</h1>
     <p class="notfound__lede">
@@ -23,7 +24,7 @@ import PageNav from '../components/PageNav.astro';
 </Base>
 
 <style>
-  .notfound { font-family: var(--sans); max-width: 40rem; }
+  .notfound { font-family: var(--sans); }
   .notfound__code {
     font-family: var(--mono); font-size: clamp(3rem, 12vw, 6rem); line-height: 1;
     color: var(--accent); margin: 0 0 0.5rem; letter-spacing: -0.02em;

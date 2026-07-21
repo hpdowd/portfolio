@@ -10,12 +10,12 @@ import PageNav from '../components/PageNav.astro';
 ---
 
 <Base
+  wide
   title="Status — Henry Dowd"
   description="Live platform availability for the self-hosted homelab that serves henrydowd.dev."
 >
-  <article class="statuspg">
-    <PageNav current="status" />
-
+  <PageNav current="status" />
+  <article class="statuspg reading">
     <header class="statuspg__head">
       <p class="statuspg__state">
         <span class="sdot" data-dot-status aria-hidden="true"></span>
@@ -57,7 +57,7 @@ import PageNav from '../components/PageNav.astro';
 </Base>
 
 <style>
-  .statuspg { font-family: var(--sans); max-width: 44rem; }
+  .statuspg { font-family: var(--sans); }
   .statuspg__head { margin: 0 0 2rem; }
   .statuspg__state {
     font-family: var(--mono); font-size: 0.8rem; color: var(--ink-soft);

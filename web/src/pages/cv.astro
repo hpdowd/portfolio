@@ -23,22 +23,22 @@ const cvPersonLd = personLd();
 ---
 
 <Base
+  wide
   title="CV — Henry Dowd"
   description="Henry Dowd, BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate infrastructure engineering / systems / SRE roles."
 >
   <script type="application/ld+json" is:inline set:html={JSON.stringify(cvPersonLd)} />
-  <article class="cv">
-    <PageNav current="cv" />
+  <PageNav current="cv" />
+  <article class="cv reading">
     <header class="cv__head">
       <div class="cv__namerow">
         <h1>Henry Dowd</h1>
         <a class="cv__pdf" href="/resume.pdf" download>Download PDF ↓</a>
       </div>
       <p class="cv__contact">
-        Ireland<span class="sep">·</span>
-        <a href="mailto:henry@dowd.ie">henry@dowd.ie</a><span class="sep">·</span>
-        <a href="https://henrydowd.dev" target="_blank" rel="noopener">henrydowd.dev</a><span class="sep">·</span>
-        <a href="https://www.linkedin.com/in/henrypdowd/" target="_blank" rel="noopener">linkedin.com/in/henrypdowd</a><span class="sep">·</span>
+        Ireland<span class="sep" aria-hidden="true">·</span>
+        <a href="mailto:henry@dowd.ie">henry@dowd.ie</a><span class="sep" aria-hidden="true">·</span>
+        <a href="https://www.linkedin.com/in/henrypdowd/" target="_blank" rel="noopener">linkedin.com/in/henrypdowd</a><span class="sep" aria-hidden="true">·</span>
         <a href="https://github.com/hpdowd" target="_blank" rel="noopener">github.com/hpdowd</a>
       </p>
     </header>
@@ -152,7 +152,10 @@ const cvPersonLd = personLd();
 
   .cv__head { margin-bottom: 0.5rem; }
   .cv__head h1 { font-size: clamp(2.4rem, 6vw, 3.4rem); margin: 0 0 0.6rem; letter-spacing: -0.02em; }
-  .cv__contact { font-family: var(--mono); font-size: 0.84rem; color: var(--ink-soft); margin: 0; line-height: 1.9; }
+  /* Contact block: a single inline row, dot-separated. Four self-describing
+     values (the URLs name their own platform) fit the reading measure without
+     wrapping; on a narrow viewport it wraps gracefully at the separators. */
+  .cv__contact { font-family: var(--mono); font-size: 0.84rem; color: var(--ink-soft); margin: 0; line-height: 1.8; }
   .cv__contact a { color: var(--ink); text-decoration: none; }
   .cv__contact a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
   .cv__contact .sep { margin: 0 0.55rem; color: var(--ink-soft); }
@@ -170,7 +173,7 @@ const cvPersonLd = personLd();
   }
   .cv__skills div:first-child { border-top: 0; padding-top: 0; }
   .cv__skills dt { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
-  .cv__skills dd { margin: 0; font-family: var(--serif); font-size: 1.02rem; }
+  .cv__skills dd { margin: 0; font-family: var(--mono); font-size: 0.92rem; line-height: 1.5; }
 
   .cv__entry { margin-bottom: 1.6rem; }
   .cv__entry:last-child { margin-bottom: 0; }

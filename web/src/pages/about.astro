@@ -9,11 +9,12 @@ import PageNav from '../components/PageNav.astro';
 ---
 
 <Base
+  wide
   title="About — Henry Dowd"
   description="A bit about Henry Dowd, a Pure Mathematics & Computer Science graduate of Maynooth focused on infrastructure engineering, and how this self-hosted site is built."
 >
-  <article class="about">
-    <PageNav current="about" />
+  <PageNav current="about" />
+  <article class="about reading">
     <h1>About</h1>
 
     <p class="lede">
@@ -48,7 +49,7 @@ import PageNav from '../components/PageNav.astro';
 </Base>
 
 <style>
-  .about { font-family: var(--sans); max-width: 42rem; }
+  .about { font-family: var(--sans); }
   .about h1 { font-size: clamp(2.4rem, 6vw, 3.2rem); margin: 0 0 1.25rem; letter-spacing: -0.02em; }
   .about .lede {
     font-family: var(--serif); font-size: clamp(1.3rem, 2.6vw, 1.6rem);

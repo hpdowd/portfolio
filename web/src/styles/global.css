@@ -30,7 +30,10 @@
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, monospace;
 
-  --measure: 56rem;
+  /* One reading measure for the subpages: main, article, and footer all share
+     it, so the column and its footer align (no full-width footer exposing an
+     unused right margin). The home overrides this with .main--wide. */
+  --measure: 44rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -67,9 +70,16 @@ main {
   margin: 0 auto;
   padding: clamp(2rem, 5vw, 5rem) 1.25rem 4rem;
 }
-/* Wide editorial container for the home (multi-column); reading pages keep the
-   narrow --measure. */
+/* Wide editorial container. Every page now uses this frame so the shared page
+   chrome (nav band, footer) sits at one consistent width and never shifts
+   between the home and the subpages. The home fills it with columns; the
+   subpages hold their prose to the reading --measure via .reading below. */
 main.main--wide { max-width: 75rem; }
+
+/* Reading column for the subpages: they render in the wide frame (so the nav
+   and footer line up with the home), but the prose itself stays at the narrow
+   --measure, centred. Only the shared chrome spans the full width. */
+.reading { max-width: var(--measure); margin-inline: auto; }
 
 a { color: var(--accent); text-underline-offset: 3px; }
 
@@ -77,6 +87,21 @@ h1, h2, h3 { font-family: var(--serif); line-height: 1.2; letter-spacing: -0.01e
 
 /* One focus ring for the whole site (previously copy-pasted into every page). */
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Inter-page link cluster — shared by the subpage PageNav and the home masthead
+   so the "CV · About · Status" switcher looks identical wherever it appears. */
+.linknav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.55rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+}
+.linknav a { color: var(--ink); text-decoration: none; }
+.linknav a:hover { color: var(--accent); }
+.linknav .sep { color: var(--ink-soft); }
+.linknav [aria-current] { color: var(--ink-soft); }
 
 /* ---- Skip link ----------------------------------------------------------- */
 .skip-link {

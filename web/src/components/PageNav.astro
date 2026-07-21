@@ -22,12 +22,12 @@ const links: { key: NonNullable<Props['current']>; href: string; label: string }
 
 <nav class="pagenav" aria-label="Site sections">
   <a class="pagenav__home" href="/">← Home</a>
-  <span class="pagenav__rail">
+  <span class="linknav">
     {links.map(({ key, href, label }, i) => (
       <Fragment>
-        {i > 0 && <span class="pagenav__sep" aria-hidden="true">·</span>}
+        {i > 0 && <span class="sep" aria-hidden="true">·</span>}
         {key === current ? (
-          <span class="pagenav__here" aria-current="page">{label}</span>
+          <span aria-current="page">{label}</span>
         ) : (
           <a href={href}>{label}</a>
         )}
@@ -37,6 +37,9 @@ const links: { key: NonNullable<Props['current']>; href: string; label: string }
 </nav>
 
 <style>
+  /* Container only: the switcher itself is the shared .linknav (global.css), so
+     it matches the home masthead. The back-link and the seating rule are the
+     only page-specific bits. */
   .pagenav {
     display: flex;
     flex-wrap: wrap;
@@ -50,10 +53,5 @@ const links: { key: NonNullable<Props['current']>; href: string; label: string }
     margin-bottom: 1.6rem;
   }
   .pagenav__home { color: var(--ink); text-decoration: none; }
-  .pagenav__rail { display: flex; align-items: baseline; gap: 0.55rem; }
-  .pagenav__rail a { color: var(--ink); text-decoration: none; }
-  .pagenav a:hover { color: var(--accent); }
-  .pagenav__sep { color: var(--ink-soft); }
-  /* Current page: present but de-emphasised against its siblings. */
-  .pagenav__here { color: var(--ink-soft); }
+  .pagenav__home:hover { color: var(--accent); }
 </style>
