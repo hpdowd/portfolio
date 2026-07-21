@@ -4,8 +4,10 @@ import "net/http"
 
 // contentSecurityPolicy is intentionally strict: the site loads only same-origin
 // assets and talks only to its own /api. All CSS and JS are external same-origin
-// files — Astro is configured with inlineStylesheets:'never' and the live script
-// is served from /home.js — so 'self' needs no 'unsafe-inline'. If the
+// files — Astro is configured with inlineStylesheets:'never' and the live wiring
+// is served as ES modules (/home.js, /status.js, and their shared /lib.js) — so
+// 'self' needs no 'unsafe-inline'. Same-origin module imports are allowed under
+// script-src 'self', so lib.js needs no directive of its own. If the
 // front-end ever loads a cross-origin asset (a web font, an embed), widen the
 // matching directive here rather than reaching for 'unsafe-inline'.
 const contentSecurityPolicy = "default-src 'self'; " +

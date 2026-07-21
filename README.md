@@ -74,7 +74,9 @@ availability from `/api/uptime`.
 │   └── api/                /api/status, /api/git, /api/uptime handlers
 ├── web/                    Astro front-end (static; built into web/dist)
 │   ├── src/                Base layout, Home.astro, cv/about/status/404 pages, global styles
-│   ├── public/             favicon, home.js + status.js (live wiring), resume.pdf, robots.txt, sitemap.xml, og-image.png
+│   │   ├── components/     Home.astro + PageNav.astro (shared subpage nav)
+│   │   └── data/           site.ts — single source for Person/WebSite JSON-LD + social links
+│   ├── public/             favicon, home.js + status.js (live wiring) + lib.js (shared helpers), resume.pdf, robots.txt, sitemap.xml, og-image.png
 │   └── dist/               build output — embedded into the binary (git-ignored)
 ├── docs/design.md          design rationale: anti-AI-aesthetic research + decisions
 ├── Dockerfile              3-stage: build site → build binary → distroless
@@ -190,9 +192,10 @@ Static, dependency-free, and hand-maintained (the site is only four routes):
   rsvg-convert -w 1200 -h 630 web/og-image.svg -o web/public/og-image.png
   ```
 - **JSON-LD** for rich-result eligibility: a `Person` on the CV page and a
-  `WebSite` + `Person` graph on the home page. Each is emitted as an inline
-  `application/ld+json` data block, which the browser never executes, so the
-  strict same-origin `script-src` CSP does not affect it.
+  `WebSite` + `Person` graph on the home page. Both build from one source
+  (`web/src/data/site.ts`) so the two `Person` nodes can't drift. Each is
+  emitted as an inline `application/ld+json` data block, which the browser
+  never executes, so the strict same-origin `script-src` CSP does not affect it.
 - **Branded 404** — `src/pages/404.astro`, served with a real `404` status by the
   Go static handler (`web.go`) for any unknown path.
 

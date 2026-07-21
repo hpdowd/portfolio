@@ -12,8 +12,9 @@ export default defineConfig({
     // immutable caching to exactly that prefix (see web.go).
     assets: '_astro',
     // Externalise all CSS (no inline <style>) so the Content-Security-Policy can
-    // stay `style-src 'self'` with no 'unsafe-inline'. The live script is
-    // likewise a same-origin external file (public/topology.js).
+    // stay `style-src 'self'` with no 'unsafe-inline'. The live scripts are
+    // likewise same-origin external modules (public/home.js, status.js and their
+    // shared lib.js), which is why script-src 'self' needs no 'unsafe-inline'.
     inlineStylesheets: 'never',
   },
 });
