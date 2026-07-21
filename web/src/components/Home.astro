@@ -26,14 +26,6 @@ import { social } from '../data/site';
       <p class="eyebrow">Infrastructure · Systems · Linux</p>
       <h1 class="name">Henry Dowd</h1>
       <p class="tagline">I build and run infrastructure from the bare metal up.</p>
-      <nav class="social" aria-label="Contact">
-        {social.map(({ key, href, value, external }) => (
-          <a class="social__item" href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
-            <span class="social__k">{key}</span>
-            <span class="social__v">{value}</span>
-          </a>
-        ))}
-      </nav>
     </div>
     <div class="masthead__side">
       <nav class="linknav" aria-label="Portfolio pages">
@@ -42,6 +34,14 @@ import { social } from '../data/site';
         <a href="/about/">About</a>
         <span class="sep" aria-hidden="true">·</span>
         <a href="/status/">Status</a>
+      </nav>
+      <nav class="social" aria-label="Contact">
+        {social.map(({ key, href, value, external }) => (
+          <a class="social__item" href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+            <span class="social__k">{key}</span>
+            <span class="social__v">{value}</span>
+          </a>
+        ))}
       </nav>
     </div>
   </header>
@@ -401,22 +401,25 @@ import { social } from '../data/site';
   .skills dt { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
   .skills dd { margin: 0; font-family: var(--mono); font-size: 0.95rem; }
 
-  /* The page switcher (shared .linknav) sits top-right, aligned with the eyebrow. */
-  .masthead__side { padding-top: 0.15rem; }
+  /* Right column: the page switcher (shared .linknav) sits top-right aligned
+     with the eyebrow, with the contact list beneath it. */
+  .masthead__side { padding-top: 0.15rem; min-width: 15rem; }
 
-  /* Social links: a horizontal contact byline under the tagline — label over
-     value, set in a row. Deliberately unlike the boxed portfolio list on the
-     right, so the two groups read as different kinds of link. */
+  /* Social links: a vertical, hairline-ruled contact block on the right — label
+     and value on one row — balancing the name against the right edge. */
   .social {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1.1rem 2.5rem;
-    margin-top: 2rem;
+    flex-direction: column;
+    margin-top: 1.5rem;
     font-family: var(--mono);
   }
-  .social__item { display: inline-flex; flex-direction: column; gap: 0.22rem; text-decoration: none; }
-  .social__k { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
-  .social__v { font-size: 0.92rem; color: var(--ink); }
+  .social__item {
+    display: grid; grid-template-columns: 5rem 1fr; gap: 0.9rem; align-items: baseline;
+    padding: 0.5rem 0; border-top: 1px solid var(--rule); text-decoration: none;
+  }
+  .social__item:last-child { border-bottom: 1px solid var(--rule); }
+  .social__k { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+  .social__v { font-size: 0.88rem; color: var(--ink); }
   .social__item:hover .social__v { color: var(--accent); }
 
   /* ---- Right aside: live telemetry ---- */
