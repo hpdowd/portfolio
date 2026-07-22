@@ -33,6 +33,8 @@ import { social } from '../data/site';
         <span class="sep" aria-hidden="true">·</span>
         <a href="/about/">About</a>
         <span class="sep" aria-hidden="true">·</span>
+        <a href="/homelab/">Homelab</a>
+        <span class="sep" aria-hidden="true">·</span>
         <a href="/status/">Status</a>
       </nav>
       <nav class="social" aria-label="Contact">
@@ -56,7 +58,7 @@ import { social } from '../data/site';
         <li><a href="#approach">Skills</a></li>
         <li><a href="#infra">Infrastructure</a></li>
       </ol>
-      <p class="rail__note">Self-hosted on k3s.<br />This page runs on the same<br />platform it reports on.</p>
+      <p class="rail__note">Self-hosted on k3s. This page runs on the same platform it reports on.</p>
     </nav>
 
     <div class="body">
@@ -80,7 +82,7 @@ import { social } from '../data/site';
             The platform this page runs on
           </p>
           <div class="entry__head">
-            <h3><a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">Homelab platform</a></h3>
+            <h3><a href="/homelab/">Homelab platform</a></h3>
             <p class="entry__meta">Proxmox · k3s · ArgoCD · VictoriaMetrics</p>
           </div>
           <p>
@@ -89,6 +91,10 @@ import { social } from '../data/site';
             VictoriaMetrics keeps an eye on the rest. It hosts Nextcloud, Immich
             and a handful of other things, including this page, which gets scraped
             by the same stack that's filling the panel on the right.
+          </p>
+          <p class="entry__links">
+            <a href="/homelab/">The build in detail →</a>
+            <a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">Source ↗</a>
           </p>
         </article>
 
@@ -385,6 +391,15 @@ import { social } from '../data/site';
   /* Body prose only — scoped to the entry's own direct <p> so it can't reach the
      meta (a <p> inside .entry__head) or the kicker, both of which are mono. */
   .entry > p:not(.entry__kicker) { font-family: var(--sans); font-size: 1.02rem; line-height: 1.6; margin: 0; color: var(--ink); }
+  /* Link row under the flagship entry: mono, muted, higher specificity than the
+     entry-prose rule above so it isn't set as body sans. */
+  .entry > p.entry__links {
+    display: flex; flex-wrap: wrap; gap: 1.25rem; margin: 0.9rem 0 0;
+    font-family: var(--mono); font-size: 0.8rem;
+  }
+  .entry__links a { color: var(--ink); text-decoration: none; }
+  .entry__links a:hover { color: var(--accent); }
+  .entry__links a[target="_blank"]::after { content: " ↗"; color: var(--ink-soft); }
 
   /* Flagship: the platform the whole page is about. A live-tinted kicker lifts
      it out of the equal-weight stack and ties it to the telemetry — the dot

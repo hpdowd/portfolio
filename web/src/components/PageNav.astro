@@ -9,13 +9,14 @@
  * Pass `current` to mark the active page (aria-current) and de-emphasise it.
  */
 interface Props {
-  current?: 'cv' | 'about' | 'status';
+  current?: 'cv' | 'about' | 'homelab' | 'status';
 }
 const { current } = Astro.props;
 
 const links: { key: NonNullable<Props['current']>; href: string; label: string }[] = [
   { key: 'cv', href: '/cv/', label: 'CV' },
   { key: 'about', href: '/about/', label: 'About' },
+  { key: 'homelab', href: '/homelab/', label: 'Homelab' },
   { key: 'status', href: '/status/', label: 'Status' },
 ];
 ---

@@ -1,0 +1,228 @@
+---
+/**
+ * Homelab — a deep dive on the flagship project: the self-hosted Kubernetes
+ * platform that serves this site. Prose in Henry's own register (see
+ * writing_style.md), tracing the system concretely; the live, interactive
+ * topology lives on the home page (#infra) and availability on /status.
+ */
+import Base from '../layouts/Base.astro';
+import PageNav from '../components/PageNav.astro';
+import { getCollection } from 'astro:content';
+
+// The notes are write-ups about this platform, listed here (drafts excluded,
+// newest first) rather than in a peer top-level section.
+const notes = (await getCollection('writing', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmtNote = (d: Date) =>
+  d.toLocaleDateString('en-IE', { year: 'numeric', month: 'short', day: 'numeric' });
+
+const stack: [string, string][] = [
+  ['Host', 'Proxmox VE on an i5-14500T · 24 GB RAM · ZFS RAID-1 (2×2 TB)'],
+  ['Cluster', 'Two-node k3s (control + worker VMs) on the single host'],
+  ['Edge', 'Cloudflare Tunnel (no forwarded ports) · Traefik ingress · MetalLB · cert-manager'],
+  ['GitOps', 'ArgoCD (app-of-apps) reconciling a git repo · Sealed Secrets · Gitea'],
+  ['Storage', 'ZFS RAID-1 mirror (redundancy at the block layer) · Longhorn volumes'],
+  ['Observability', 'VictoriaMetrics · Grafana · Alertmanager'],
+  ['Backup', 'restic → Backblaze B2, nightly, off-site (encrypted)'],
+  ['Apps', 'Nextcloud · Immich · Collabora · Kiwix · Gitea · this site'],
+];
+---
+
+<Base
+  wide
+  title="Homelab — Henry Dowd"
+  description="A deep dive on the self-hosted, two-node Kubernetes platform that serves this site: Proxmox, k3s, ArgoCD GitOps, and full observability, all reconciled from a single git repository."
+>
+  <PageNav current="homelab" />
+  <article class="lab">
+    <nav class="lab__rail" aria-label="On this page">
+      <ol class="lab__index">
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#stack">The stack</a></li>
+        <li><a href="#notes">Notes</a></li>
+      </ol>
+      <p class="lab__railnote">Live topology and status live on the <a href="/">home page</a>.</p>
+    </nav>
+    <div class="lab__body">
+    <header class="lab__head">
+      <p class="lab__kicker">The platform this page runs on</p>
+      <h1>Homelab platform</h1>
+      <p class="lede">
+        A two-node Kubernetes cluster that I run at home, on a single machine
+        under my desk, and that I manage entirely from one git repository; it
+        hosts a dozen or so services my household genuinely uses, and it also
+        serves this very page, which is then scraped by the same monitoring the
+        page reports on.
+      </p>
+      <p class="lab__links">
+        <a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">Config repo ↗</a>
+        <a href="https://github.com/hpdowd/portfolio" target="_blank" rel="noopener">This site's source ↗</a>
+        <a href="/status/">Live status →</a>
+        <a href="/#infra">Live topology →</a>
+      </p>
+    </header>
+
+    <section id="how" class="lab__sec lab__prose">
+      <h2>How it works</h2>
+      <p>
+        Everything runs on one Proxmox host, and on top of it sit two virtual
+        machines that make up a k3s cluster, a control node and a worker. Nothing
+        in that cluster is changed by me editing it live. The git repository is the
+        single source of truth, ArgoCD watches it and continuously reconciles the
+        running state back towards whatever is committed using the "app of apps"
+        pattern. Adding a service is a commit and a push, not a manual change,
+        and the deploys that come out of it are reviewable and repeatable.
+        That discipline, rather than the scale, is the point of running it this way,
+        and it is the part that carries straight over to real work. One machine does
+        mean one of everything, a single host and a single uplink. The night
+        that network card wedged itself and took the whole homelab dark is written
+        up in the <a href="/homelab/notes/nic-hang/">notes below</a>.
+      </p>
+      <p>
+        No web request from the public internet lands on a forwarded port, because
+        there is not one open for them. Each arrives over a Cloudflare tunnel that a
+        daemon holds open from the inside, and Traefik terminates it and routes it on
+        while MetalLB hands out the addresses the services answer on. The one port I
+        do forward is for my own WireGuard VPN, so I can still get back in when the
+        cluster is down. Inside the house the same names resolve locally through
+        <a href="/homelab/notes/split-horizon-dns/">split-horizon DNS</a>, so LAN
+        traffic never leaves the building. Behind the ingress the services keep their
+        state on Longhorn volumes, with the redundancy for those and for everything
+        else on the box sitting underneath in a
+        <a href="/homelab/notes/zfs-mirror/">ZFS mirror</a> rather than in replica
+        copies inside a single-machine cluster. The credentials they need are
+        committed to the same public repository but sealed so only the cluster can
+        read them, and the whole lot is scraped by the VictoriaMetrics, Grafana and
+        Alertmanager stack that also monitors this page. The only path that leaves
+        the host is the backup, restic pushing an encrypted copy off-site to Backblaze
+        every night, which covers the failures a local mirror cannot, theft, fire, or
+        a fat-fingered delete.
+      </p>
+    </section>
+
+    <section id="stack" class="lab__sec">
+      <h2>The stack</h2>
+      <dl class="lab__stack">
+        {stack.map(([k, v]) => (
+          <div><dt>{k}</dt><dd>{v}</dd></div>
+        ))}
+      </dl>
+    </section>
+
+    {notes.length > 0 && (
+      <section id="notes" class="lab__sec" aria-label="Notes">
+        <h2>Notes</h2>
+        <p class="lab__notesintro">
+          Longer write-ups of things I built or debugged here, from the reasoning
+          behind a decision to a post-mortem of something that broke.
+        </p>
+        <ul class="lab__notes">
+          {notes.map(({ id, data }) => (
+            <li>
+              <a href={`/homelab/notes/${id}/`}>
+                <span class="lab__note-t">{data.title}</span>
+                <span class="lab__note-d">{data.description}</span>
+                <time class="lab__note-date" datetime={data.date.toISOString()}>{fmtNote(data.date)}</time>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    </div>
+  </article>
+</Base>
+
+<style>
+  .lab { font-family: var(--sans); }
+  /* Reading column, centred like the other subpages until the rail appears. */
+  .lab__body { max-width: var(--measure); margin-inline: auto; }
+
+  /* Left rail: a sticky section index, matching the home page's rail. Hidden
+     below the breakpoint (same as home); the body then reads as a single column. */
+  .lab__rail { display: none; }
+  .lab__index { list-style: none; margin: 0 0 1.5rem; padding: 0; }
+  .lab__index li { padding: 0.5rem 0; border-top: 1px solid var(--line); }
+  .lab__index li:last-child { border-bottom: 1px solid var(--line); }
+  .lab__index a { color: var(--ink); text-decoration: none; transition: color 0.15s ease; }
+  .lab__index a:hover { color: var(--accent); }
+  .lab__railnote { font-family: var(--mono); font-size: 0.78rem; color: var(--ink-soft); line-height: 1.7; margin: 0; }
+  .lab__railnote a { color: var(--ink); text-decoration: none; }
+  .lab__railnote a:hover { color: var(--accent); }
+
+  @media (min-width: 74rem) {
+    /* The reading column stays centred in the frame exactly like the other
+       pages (equal 1fr gutters either side of the measure); the rail floats out
+       into the left gutter rather than being centred together with the content. */
+    .lab {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, var(--measure)) minmax(0, 1fr);
+      align-items: start;
+    }
+    .lab__body { grid-column: 2; }
+    .lab__rail {
+      display: block; grid-column: 1; justify-self: end;
+      width: 11rem; margin-right: 1.75rem;
+      position: sticky; top: 1.5rem; font-family: var(--mono);
+    }
+  }
+
+  /* Anchor targets clear the sticky offset a little when jumped to. */
+  #how, #stack, #notes { scroll-margin-top: 1.5rem; }
+
+  .lab__head { margin: 0 0 0.5rem; }
+  .lab__kicker {
+    font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft); margin: 0 0 0.7rem;
+  }
+  .lab__head h1 { font-size: clamp(2.4rem, 6vw, 3.4rem); margin: 0 0 1rem; letter-spacing: -0.02em; line-height: 1.05; }
+  .lab .lede {
+    font-family: var(--serif); font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+    line-height: 1.45; color: var(--ink); margin: 0 0 1.25rem;
+  }
+  .lab__links { display: flex; flex-wrap: wrap; gap: 0.8rem 1.5rem; margin: 0; font-family: var(--mono); font-size: 0.8rem; }
+  .lab__links a { color: var(--ink); text-decoration: none; }
+  .lab__links a:hover { color: var(--accent); }
+
+  /* The narrative section is a .lab__sec (chrome + heading); .lab__prose only
+     sets its serif paragraph typography. */
+  .lab__prose p {
+    font-family: var(--serif); font-size: 1.18rem; line-height: 1.62; margin: 0 0 1.3rem;
+  }
+  .lab__prose p:last-child { margin-bottom: 0; }
+  .lab__prose a { color: var(--accent); text-underline-offset: 3px; }
+
+  .lab__sec { padding: 1.75rem 0; border-top: 1px solid var(--line); margin-top: 1.5rem; }
+  .lab__sec > h2 {
+    font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+    margin: 0 0 1.1rem;
+  }
+  .lab__stack div {
+    display: grid; grid-template-columns: minmax(0, 10rem) 1fr; gap: 0.4rem 1.5rem;
+    padding: 0.7rem 0; border-top: 1px solid var(--line);
+  }
+  .lab__stack div:first-child { border-top: 0; padding-top: 0; }
+  .lab__stack dt {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-soft); margin: 0;
+  }
+  .lab__stack dd { margin: 0; font-family: var(--mono); font-size: 0.9rem; line-height: 1.5; }
+
+  .lab__notesintro { font-size: 1rem; line-height: 1.55; color: var(--ink-soft); margin: 0 0 1.25rem; }
+  .lab__notes { list-style: none; margin: 0; padding: 0; }
+  .lab__notes li { border-top: 1px solid var(--line); }
+  .lab__notes li:last-child { border-bottom: 1px solid var(--line); }
+  .lab__notes a { display: block; padding: 1.1rem 0; text-decoration: none; color: inherit; }
+  .lab__note-t {
+    display: block; font-family: var(--serif); font-weight: 600; font-size: 1.25rem;
+    line-height: 1.2; letter-spacing: -0.01em; color: var(--ink);
+  }
+  .lab__notes a:hover .lab__note-t { color: var(--accent); }
+  .lab__note-d { display: block; font-size: 0.98rem; line-height: 1.5; color: var(--ink-soft); margin-top: 0.35rem; }
+  .lab__note-date {
+    display: block; font-family: var(--mono); font-size: 0.72rem; color: var(--ink-soft);
+    margin-top: 0.5rem; font-variant-numeric: tabular-nums;
+  }
+</style>

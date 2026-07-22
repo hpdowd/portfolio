@@ -73,10 +73,11 @@ availability from `/api/uptime`.
 │   ├── gitea/              Gitea client (anonymous public-repo reads)
 │   └── api/                /api/status, /api/git, /api/uptime handlers
 ├── web/                    Astro front-end (static; built into web/dist)
-│   ├── src/                Base layout, Home.astro, cv/about/status/404 pages, global styles
+│   ├── src/                Base layout, cv/about/status/homelab (+ homelab/notes)/404 pages, sitemap + rss endpoints, global styles
 │   │   ├── components/     Home.astro + PageNav.astro (shared subpage nav)
+│   │   ├── content/        writing collection (Markdown homelab notes) + content.config.ts
 │   │   └── data/           site.ts — single source for Person/WebSite JSON-LD + social links
-│   ├── public/             favicon, home.js + status.js (live wiring) + lib.js (shared helpers), resume.pdf, robots.txt, sitemap.xml, og-image.png
+│   ├── public/             favicon, home.js + status.js (live wiring) + lib.js (shared helpers), resume.pdf, robots.txt, og-image.png
 │   └── dist/               build output — embedded into the binary (git-ignored)
 ├── docs/design.md          design rationale: anti-AI-aesthetic research + decisions
 ├── Dockerfile              3-stage: build site → build binary → distroless
@@ -179,10 +180,14 @@ deliberately avoids the generic "AI-generated" aesthetic) is documented in
 
 ## SEO & social metadata
 
-Static, dependency-free, and hand-maintained (the site is only four routes):
+Static and dependency-free — generated at build time, no `@astrojs/*` packages:
 
 - `web/public/robots.txt` — allows all crawlers and points at the sitemap.
-- `web/public/sitemap.xml` — the four canonical URLs, each with `<lastmod>`.
+- `web/src/pages/sitemap.xml.ts` — generated sitemap: a hand-listed set of
+  top-level routes plus the `/homelab/notes` entries derived from the content
+  collection (drafts excluded), so new posts appear without editing it.
+- `web/src/pages/rss.xml.ts` — RSS 2.0 feed for the homelab notes, discoverable
+  via a `<link rel="alternate">` in the base layout.
 - **Open Graph / Twitter card** — `og:image` plus `twitter:card=summary_large_image`
   in the base layout reference `og-image.png` (1200×630), so a shared link renders
   a branded preview. The PNG is generated from `web/og-image.svg` (which mirrors the
@@ -198,6 +203,11 @@ Static, dependency-free, and hand-maintained (the site is only four routes):
   never executes, so the strict same-origin `script-src` CSP does not affect it.
 - **Branded 404** — `src/pages/404.astro`, served with a real `404` status by the
   Go static handler (`web.go`) for any unknown path.
+
+> **Note — two CVs.** `web/public/resume.pdf` (the downloadable) and the `/cv`
+> page (`src/pages/cv.astro`) are independent sources of truth. When you change
+> one, update the other, or they will drift. The page content is not generated
+> from the PDF or vice versa.
 
 ## Build & deploy (CI/CD)
 
