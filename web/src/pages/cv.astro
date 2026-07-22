@@ -75,10 +75,10 @@ const cvPersonLd = personLd();
           <span class="cv__dates">2024 – Present</span>
         </div>
         <ul>
-          <li>Run a two-node k3s cluster on a single Proxmox host, managed end to end with GitOps: ArgoCD reconciles the cluster against a git repository using the app-of-apps pattern, so the repo is the single source of truth. <a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">github.com/hpdowd/homelab</a></li>
+          <li>Run a two-node k3s cluster on a single Proxmox host, hosting around a dozen services (Nextcloud, Immich, Gitea, and this site among them), managed end to end with GitOps: ArgoCD reconciles the cluster against a git repository using the app-of-apps pattern, so the repo is the single source of truth. <a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">github.com/hpdowd/homelab</a></li>
           <li>Built the platform from individual components: MetalLB for load balancing, Traefik for ingress, Longhorn for replicated storage, and Sealed Secrets to keep encrypted credentials in git.</li>
-          <li>Expose services publicly through a Cloudflare Tunnel with no inbound ports open, and resolve the same hostnames internally with split-horizon DNS (Technitium) so LAN traffic stays in-house.</li>
-          <li>Added a VictoriaMetrics, Grafana, and Alertmanager stack for metrics and alerting, with offsite restic backups to Backblaze B2; documented decisions as ADRs and incidents as post-mortems.</li>
+          <li>Expose services publicly through a Cloudflare Tunnel, so no inbound port is forwarded for any of them, and resolve the same hostnames internally with split-horizon DNS (Technitium) so LAN traffic stays in-house.</li>
+          <li>Added a VictoriaMetrics, Grafana, and Alertmanager stack for metrics and alerting, with 30 days of metrics retention and nightly offsite restic backups to Backblaze B2 (24-hour RPO); documented decisions as ADRs and incidents as post-mortems.</li>
         </ul>
       </div>
 
@@ -139,7 +139,7 @@ const cvPersonLd = personLd();
 
     <section class="cv__sec">
       <h2>Certifications &amp; Additional</h2>
-      <p>Fortinet NSE 1–3 (2026) · Full driving licence · CTYI alumnus</p>
+      <p>Fortinet NSE 1–3 (2026) · Full driving licence</p>
     </section>
   </article>
 </Base>
