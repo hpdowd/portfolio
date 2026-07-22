@@ -204,10 +204,19 @@ Static and dependency-free — generated at build time, no `@astrojs/*` packages
 - **Branded 404** — `src/pages/404.astro`, served with a real `404` status by the
   Go static handler (`web.go`) for any unknown path.
 
-> **Note — two CVs.** `web/public/resume.pdf` (the downloadable) and the `/cv`
-> page (`src/pages/cv.astro`) are independent sources of truth. When you change
-> one, update the other, or they will drift. The page content is not generated
-> from the PDF or vice versa.
+> **Note — two CVs, update both.** `web/public/resume.pdf` (the downloadable)
+> and the `/cv` page (`src/pages/cv.astro`) are independent sources of truth.
+> Neither is generated from the other, so when you edit one you must edit the
+> other by hand or they will drift. The PDF in particular is **not** built by
+> CI: it is authored and exported manually elsewhere and committed as a binary,
+> so a change to `cv.astro` will not touch it. After editing the page, re-export
+> `resume.pdf` to match and commit it in the same change.
+>
+> _Future improvement:_ keep the résumé as a checked-in LaTeX (`.tex`) source and
+> generate `resume.pdf` from it — a build step (or a git hook / CI job running
+> `tectonic`/`latexmk`) would then rebuild the PDF whenever the source changes,
+> removing the manual export. This still leaves two sources to reconcile against
+> `cv.astro`, but the PDF itself would no longer be a hand-produced binary.
 
 ## Build & deploy (CI/CD)
 
