@@ -72,8 +72,8 @@ func New(
 
 	// The 30-day availability history for the status page. Its own VM reachability
 	// is already covered by statusLoader's upstreamVM gauge, so it doesn't report
-	// separately. Not warmed (see Warm): it's lazy-loaded on the first /api/uptime
-	// request, since the status page is visited far less than the home page.
+	// separately. Warmed alongside the others (see Warm) so the status page paints
+	// live on first visit rather than eating a cold-start miss.
 	uptimeLoader := func() (vm.Uptime, error) {
 		ctx, cancel := context.WithTimeout(context.Background(), reqTimeout)
 		defer cancel()
@@ -110,6 +110,7 @@ func (a *API) Routes(mux *http.ServeMux) {
 func (a *API) Warm() {
 	a.status.Get()
 	a.git.Get()
+	a.uptime.Get()
 }
 
 type statusResponse struct {
@@ -156,8 +157,8 @@ type uptimeResponse struct {
 }
 
 // handleUptime returns the platform availability history for the status page.
-// Lazily loaded and cached; the first request may come back not-live while the
-// background load runs, then fills on the next poll.
+// Served from the warmed cache, so a request normally comes back live; only
+// before the first warm lands does it return not-live and fill on the next poll.
 func (a *API) handleUptime(w http.ResponseWriter, _ *http.Request) {
 	var resp uptimeResponse
 	if u, ok := a.uptime.Get(); ok {

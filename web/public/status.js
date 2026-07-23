@@ -48,12 +48,33 @@ function render(u) {
   q('[data-state]').textContent = STATE_LABEL[st];
 }
 
+// Paint the "no data" state: a neutral dot, an honest state line, and a message
+// in place of the empty strip. Given the server warms and holds the last good
+// value, the only way a viewer lands here is a fetch that has never once
+// succeeded — so "error retrieving" is truer than a loading spinner.
+function showEmpty() {
+  q('[data-state]').textContent = 'Error retrieving data';
+  const dot = q('[data-dot-status]');
+  if (dot) dot.className = 'sdot sdot--na';
+  const strip = q('[data-strip]');
+  const msg = document.createElement('p');
+  msg.className = 'strip__empty';
+  msg.textContent = 'Couldn’t retrieve availability from the monitoring backend.';
+  strip.replaceChildren(msg);
+}
+
+let hasData = false;
+
 async function tick() {
   const r = await getJSON('/api/uptime');
   if (r && r.uptime && Array.isArray(r.uptime.days) && r.uptime.days.length) {
     render(r.uptime);
-  } else {
-    q('[data-state]').textContent = r ? 'Awaiting data' : 'Status feed unavailable';
+    hasData = true;
+  } else if (!hasData) {
+    // Only show the empty state before the first good render. A later poll that
+    // blips shouldn't wipe data we already have — the server keeps serving the
+    // last good value, so the strip stays put until a fetch succeeds again.
+    showEmpty();
   }
 }
 

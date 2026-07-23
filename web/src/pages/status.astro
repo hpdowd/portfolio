@@ -110,6 +110,11 @@ import PageNav from '../components/PageNav.astro';
   .strip :global(.cell--warn) { background: var(--warn); }
   .strip :global(.cell--err) { background: var(--err); }
   .strip :global(.cell--na) { background: var(--line); }
+  /* Filler when there's no history to draw (see status.js showEmpty). */
+  .strip :global(.strip__empty) {
+    font-family: var(--mono); font-size: 0.75rem; color: var(--ink-soft);
+    margin: 0; padding: 0.35rem 0;
+  }
 
   .history__foot { font-family: var(--mono); font-size: 0.72rem; line-height: 1.6; color: var(--ink-soft); margin: 0.5rem 0 0; }
 
