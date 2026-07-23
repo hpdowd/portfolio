@@ -1,4 +1,4 @@
-% Henry Dowd — CV (infrastructure / SRE / DevOps / platform).
+% Henry Dowd — CV (platform engineering / SRE / low-level infrastructure).
 % Single source for both the downloadable PDF and the /cv page (see README,
 % "CV: one source, two outputs"). Compile the PDF with:
 %   pdflatex resume.tex   (run twice, for hyperlinks)
@@ -45,45 +45,44 @@
 \end{center}
 
 \section{Profile}
-BSc in Pure Mathematics \& Computer Science, Maynooth University, completed May 2026, with a year abroad at the University of Ottawa. Run a two-node k3s cluster on a single Proxmox host, administering the stack from physical hardware and virtualisation up to GitOps-managed Kubernetes, with CI/CD, monitoring, and alerting built in. Comfortable with Linux administration, networking, and Python scripting, and troubleshoot my own infrastructure when it breaks. Targeting roles in platform engineering, site reliability, DevOps, and low-level infrastructure.
+BSc in Pure Mathematics \& Computer Science, Maynooth University, completed May 2026, with a year abroad at the University of Ottawa. Run a two-node k3s cluster on a single Proxmox host: hardware and virtualisation up through GitOps-managed Kubernetes, with CI/CD, monitoring, and alerting. Troubleshoot faults across the stack, from hardware quirks and kernel drivers up to Kubernetes workloads. Targeting platform engineering, site reliability, and low-level infrastructure.
 
 \section{Technical Skills}
-\skillsline{Linux \& Virtualisation}{Arch Linux, Proxmox VE, LXC, ZFS, systemd, shell scripting, SSH key management}
-\skillsline{Networking}{TCP/IP, DNS (split-horizon), DHCP, WireGuard, Cloudflare Tunnels, reverse proxies / ingress, SSL/TLS}
-\skillsline{Containers \& CI/CD}{Kubernetes (k3s), Docker, Helm, ArgoCD (GitOps), GitHub Actions, MetalLB, Traefik, Longhorn}
-\skillsline{Observability \& Backup}{VictoriaMetrics, Grafana, Alertmanager, restic, Backblaze B2}
-\skillsline{Scripting \& Tools}{Python, Bash, Java, C, SQL; Git, Gitea, cert-manager (Let's Encrypt), Technitium DNS, \LaTeX}
+\skillsline{Linux \& Virtualisation}{Arch Linux, Proxmox VE, LXC, ZFS, systemd, shell scripting}
+\skillsline{Networking \& Security}{TCP/IP, DNS (split-horizon), WireGuard, Cloudflare Tunnel + Access, SSL/TLS}
+\skillsline{Kubernetes \& GitOps}{k3s, Helm, ArgoCD (app-of-apps), MetalLB, Traefik, Longhorn, Sealed Secrets, cert-manager}
+\skillsline{CI/CD \& Observability}{GitHub Actions, GHCR, VictoriaMetrics, Grafana, Alertmanager, restic, Backblaze B2}
+\skillsline{Languages \& Tools}{Python, Bash, Java, C, SQL; Git, Gitea, Technitium DNS}
 
 \section{Projects}
-\cventry{Self-Hosted Infrastructure \& Home Lab}{Personal}{2024 -- Present}
+\cventry{Homelab --- k3s / GitOps Platform}{Personal}{2024 -- Present}
 \begin{cvitems}
-  \item Two-node k3s cluster on single Proxmox host, GitOps via ArgoCD app-of-apps pattern, git repo as single source of truth.
-  \item Platform assembled from components: MetalLB load balancing, Traefik ingress, Longhorn persistent block storage (replica=1, deliberate single-worker tradeoff), Sealed Secrets for encrypted credentials in git.
+  \item Two-node k3s cluster on a single Proxmox host, GitOps via ArgoCD app-of-apps pattern, git repo as single source of truth.
+  \item Platform assembled from components: MetalLB, Traefik ingress, Longhorn persistent block storage (replica=1, deliberate single-worker tradeoff over host-level ZFS RAID-1 mirror), Sealed Secrets for encrypted credentials in git.
+  \item Cluster-wide hardening: NetworkPolicy default-deny per namespace, non-root SecurityContext with dropped capabilities and read-only root filesystem.
   \item CI/CD end-to-end: GitHub Actions builds, pushes to GHCR, updates SHA-pinned manifest, ArgoCD reconciles; in-cluster runner lints manifests.
-  \item Public ingress via Cloudflare Tunnel (no inbound ports open), split-horizon DNS via Technitium, wildcard TLS via cert-manager and Let's Encrypt DNS-01.
-  \item Observability stack VictoriaMetrics, Grafana, Alertmanager with \texttt{absent()} guards so a dead scrape self-alerts; encrypted offsite restic backups to Backblaze B2, quarterly verified restores.
-  \item Diagnosed intermittent e1000e (Intel I219-LM) NIC transmit hangs across ethtool offload settings, modprobe driver parameters, and GRUB \texttt{pcie\_aspm=off} — layered isolation separating configuration from firmware.
-  \item Decisions documented as ADRs, incidents as post-mortems. \href{https://github.com/hpdowd/homelab}{github.com/hpdowd/homelab}
+  \item Public ingress via Cloudflare Tunnel (no inbound ports open), split-horizon DNS via Technitium, wildcard TLS via cert-manager and Let's Encrypt DNS-01; Cloudflare Access on sensitive services.
+  \item Observability with VictoriaMetrics, Grafana, Alertmanager and \texttt{absent()} guards so a dead scrape self-alerts; encrypted offsite restic backups to Backblaze B2, quarterly verified restores.
+  \item Diagnosed intermittent e1000e (Intel I219-LM) NIC transmit hangs across ethtool offload settings, modprobe driver parameters, and GRUB \texttt{pcie\_aspm=off}.
+  \item Architecture decisions recorded as ADRs, incidents as post-mortems. \href{https://github.com/hpdowd/homelab}{github.com/hpdowd/homelab}
 \end{cvitems}
 
 \cventry{Final Year Project --- Paraphrase Detection}{Maynooth University}{2025 -- 2026}
 \begin{cvitems}
   \item Built a dual-branch classifier fusing BERT cosine similarity, Zhang--Shasha tree edit distance, Jaccard overlap, and length ratio; evaluated on the MSRP corpus in Python with HuggingFace Transformers, PyTorch, and scikit-learn.
-  \item Performed error analysis comparing structural vs.\ semantic methods, with confusion matrices, score distributions, and parse-tree examples of failure modes.
-  \href{https://github.com/hpdowd/paraphrase_detector}{github.com/hpdowd/paraphrase\_detector}
+  \item Performed error analysis comparing structural vs.\ semantic methods, with confusion matrices, score distributions, and parse-tree examples of failure modes. \href{https://github.com/hpdowd/paraphrase_detector}{github.com/hpdowd/paraphrase\_detector}
 \end{cvitems}
 
 \cventry{PDF-Sorter --- Workplace Automation Tool}{Python}{2025}
 \begin{cvitems}
-  \item Regex-based tool to auto-sort and rename PDFs by filename and content metadata, with OCR fallback; deployed during HR placement at Roscommon County Council.
-  \href{https://github.com/hpdowd/PDF-Sorter}{github.com/hpdowd/PDF-Sorter}
+  \item Regex-based tool to auto-sort and rename PDFs by filename and content metadata, with OCR fallback; deployed during HR placement at Roscommon County Council. \href{https://github.com/hpdowd/PDF-Sorter}{github.com/hpdowd/PDF-Sorter}
 \end{cvitems}
 
 \section{Experience}
 \cventry{Summer Student --- Human Resources}{Roscommon County Council}{Jun -- Sep 2025}
 \begin{cvitems}
-  \item Data entry, records management, and financial processing across employee files and payroll-adjacent administration.
-  \item Identified a repetitive document-sorting bottleneck and built a custom Python tool to automate the workflow.
+  \item Data entry, records management, and financial processing across employee files and payroll administration.
+  \item Identified a repetitive document-sorting bottleneck and shipped the PDF-Sorter tool to automate it.
 \end{cvitems}
 
 \section{Education \& Certifications}
@@ -97,9 +96,8 @@ BSc in Pure Mathematics \& Computer Science, Maynooth University, completed May 
 
 \vspace{4pt}
 \cventry{Study Abroad}{University of Ottawa}{Sep 2024 -- May 2025}
-\vspace{-16pt}
-\section{}
+\vspace{2pt}
 \noindent Fortinet NSE 1--3 (2026)\enspace\textperiodcentered\enspace
-Full driving licence \enspace\textperiodcentered\enspace CTYI
+Full driving licence\enspace\textperiodcentered\enspace CTYI alumnus
 
 \end{document}

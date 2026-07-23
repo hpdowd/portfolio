@@ -14,7 +14,7 @@ export const sections: CvSection[] = [
     "blocks": [
       {
         "kind": "prose",
-        "html": "BSc in Pure Mathematics &amp; Computer Science, Maynooth University, completed May 2026, with a year abroad at the University of Ottawa. Run a two-node k3s cluster on a single Proxmox host, administering the stack from physical hardware and virtualisation up to GitOps-managed Kubernetes, with CI/CD, monitoring, and alerting built in. Comfortable with Linux administration, networking, and Python scripting, and troubleshoot my own infrastructure when it breaks. Targeting roles in platform engineering, site reliability, DevOps, and low-level infrastructure."
+        "html": "BSc in Pure Mathematics &amp; Computer Science, Maynooth University, completed May 2026, with a year abroad at the University of Ottawa. Run a two-node k3s cluster on a single Proxmox host: hardware and virtualisation up through GitOps-managed Kubernetes, with CI/CD, monitoring, and alerting. Troubleshoot faults across the stack, from hardware quirks and kernel drivers up to Kubernetes workloads. Targeting platform engineering, site reliability, and low-level infrastructure."
       }
     ]
   },
@@ -26,23 +26,23 @@ export const sections: CvSection[] = [
         "rows": [
           {
             "label": "Linux & Virtualisation",
-            "items": "Arch Linux, Proxmox VE, LXC, ZFS, systemd, shell scripting, SSH key management"
+            "items": "Arch Linux, Proxmox VE, LXC, ZFS, systemd, shell scripting"
           },
           {
-            "label": "Networking",
-            "items": "TCP/IP, DNS (split-horizon), DHCP, WireGuard, Cloudflare Tunnels, reverse proxies / ingress, SSL/TLS"
+            "label": "Networking & Security",
+            "items": "TCP/IP, DNS (split-horizon), WireGuard, Cloudflare Tunnel + Access, SSL/TLS"
           },
           {
-            "label": "Containers & CI/CD",
-            "items": "Kubernetes (k3s), Docker, Helm, ArgoCD (GitOps), GitHub Actions, MetalLB, Traefik, Longhorn"
+            "label": "Kubernetes & GitOps",
+            "items": "k3s, Helm, ArgoCD (app-of-apps), MetalLB, Traefik, Longhorn, Sealed Secrets, cert-manager"
           },
           {
-            "label": "Observability & Backup",
-            "items": "VictoriaMetrics, Grafana, Alertmanager, restic, Backblaze B2"
+            "label": "CI/CD & Observability",
+            "items": "GitHub Actions, GHCR, VictoriaMetrics, Grafana, Alertmanager, restic, Backblaze B2"
           },
           {
-            "label": "Scripting & Tools",
-            "items": "Python, Bash, Java, C, SQL; Git, Gitea, cert-manager (Let’s Encrypt), Technitium DNS, LaTeX"
+            "label": "Languages & Tools",
+            "items": "Python, Bash, Java, C, SQL; Git, Gitea, Technitium DNS"
           }
         ]
       }
@@ -53,17 +53,18 @@ export const sections: CvSection[] = [
     "blocks": [
       {
         "kind": "entry",
-        "title": "Self-Hosted Infrastructure &amp; Home Lab",
+        "title": "Homelab — k3s / GitOps Platform",
         "org": "Personal",
         "dates": "2024 – Present",
         "bullets": [
-          "Two-node k3s cluster on single Proxmox host, GitOps via ArgoCD app-of-apps pattern, git repo as single source of truth.",
-          "Platform assembled from components: MetalLB load balancing, Traefik ingress, Longhorn persistent block storage (replica=1, deliberate single-worker tradeoff), Sealed Secrets for encrypted credentials in git.",
+          "Two-node k3s cluster on a single Proxmox host, GitOps via ArgoCD app-of-apps pattern, git repo as single source of truth.",
+          "Platform assembled from components: MetalLB, Traefik ingress, Longhorn persistent block storage (replica=1, deliberate single-worker tradeoff over host-level ZFS RAID-1 mirror), Sealed Secrets for encrypted credentials in git.",
+          "Cluster-wide hardening: NetworkPolicy default-deny per namespace, non-root SecurityContext with dropped capabilities and read-only root filesystem.",
           "CI/CD end-to-end: GitHub Actions builds, pushes to GHCR, updates SHA-pinned manifest, ArgoCD reconciles; in-cluster runner lints manifests.",
-          "Public ingress via Cloudflare Tunnel (no inbound ports open), split-horizon DNS via Technitium, wildcard TLS via cert-manager and Let’s Encrypt DNS-01.",
-          "Observability stack VictoriaMetrics, Grafana, Alertmanager with <code>absent()</code> guards so a dead scrape self-alerts; encrypted offsite restic backups to Backblaze B2, quarterly verified restores.",
-          "Diagnosed intermittent e1000e (Intel I219-LM) NIC transmit hangs across ethtool offload settings, modprobe driver parameters, and GRUB <code>pcie_aspm=off</code> — layered isolation separating configuration from firmware.",
-          "Decisions documented as ADRs, incidents as post-mortems. <a href=\"https://github.com/hpdowd/homelab\" target=\"_blank\" rel=\"noopener\">github.com/hpdowd/homelab</a>"
+          "Public ingress via Cloudflare Tunnel (no inbound ports open), split-horizon DNS via Technitium, wildcard TLS via cert-manager and Let’s Encrypt DNS-01; Cloudflare Access on sensitive services.",
+          "Observability with VictoriaMetrics, Grafana, Alertmanager and <code>absent()</code> guards so a dead scrape self-alerts; encrypted offsite restic backups to Backblaze B2, quarterly verified restores.",
+          "Diagnosed intermittent e1000e (Intel I219-LM) NIC transmit hangs across ethtool offload settings, modprobe driver parameters, and GRUB <code>pcie_aspm=off</code>.",
+          "Architecture decisions recorded as ADRs, incidents as post-mortems. <a href=\"https://github.com/hpdowd/homelab\" target=\"_blank\" rel=\"noopener\">github.com/hpdowd/homelab</a>"
         ]
       },
       {
@@ -96,8 +97,8 @@ export const sections: CvSection[] = [
         "org": "Roscommon County Council",
         "dates": "Jun – Sep 2025",
         "bullets": [
-          "Data entry, records management, and financial processing across employee files and payroll-adjacent administration.",
-          "Identified a repetitive document-sorting bottleneck and built a custom Python tool to automate the workflow."
+          "Data entry, records management, and financial processing across employee files and payroll administration.",
+          "Identified a repetitive document-sorting bottleneck and shipped the PDF-Sorter tool to automate it."
         ]
       }
     ]
@@ -123,15 +124,10 @@ export const sections: CvSection[] = [
         "org": "University of Ottawa",
         "dates": "Sep 2024 – May 2025",
         "bullets": []
-      }
-    ]
-  },
-  {
-    "heading": "",
-    "blocks": [
+      },
       {
         "kind": "prose",
-        "html": "Fortinet NSE 1–3 (2026) · Full driving licence · CTYI"
+        "html": "Fortinet NSE 1–3 (2026) · Full driving licence · CTYI alumnus"
       }
     ]
   }
