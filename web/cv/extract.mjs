@@ -1,5 +1,5 @@
 /**
- * CV extractor: primary_cv.tex -> src/data/cv.ts.
+ * CV extractor: resume.tex -> src/data/cv.ts.
  *
  * The .tex is the single source of truth for both the downloadable PDF
  * (pdflatex) and the /cv page. This script parses the LaTeX body with
@@ -22,7 +22,7 @@ import { unifiedLatexFromString } from '@unified-latex/unified-latex-util-parse'
 import { unifiedLatexToHast } from '@unified-latex/unified-latex-to-hast';
 import rehypeStringify from 'rehype-stringify';
 
-const SRC = fileURLToPath(new URL('./primary_cv.tex', import.meta.url));
+const SRC = fileURLToPath(new URL('./resume.tex', import.meta.url));
 const OUT = fileURLToPath(new URL('../src/data/cv.ts', import.meta.url));
 
 // `\&` makes unified-latex's HTML conversion swallow the following space
@@ -169,7 +169,7 @@ function extract(tex) {
 
 const sections = extract(readFileSync(SRC, 'utf8'));
 
-const banner = `// AUTO-GENERATED from web/cv/primary_cv.tex by \`npm run cv:data\`.
+const banner = `// AUTO-GENERATED from web/cv/resume.tex by \`npm run cv:data\`.
 // Do not edit by hand — edit the .tex and regenerate.
 `;
 const types = `export interface SkillRow { label: string; items: string; }

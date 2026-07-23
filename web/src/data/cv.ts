@@ -1,4 +1,4 @@
-// AUTO-GENERATED from web/cv/primary_cv.tex by `npm run cv:data`.
+// AUTO-GENERATED from web/cv/resume.tex by `npm run cv:data`.
 // Do not edit by hand — edit the .tex and regenerate.
 
 export interface SkillRow { label: string; items: string; }
@@ -123,10 +123,15 @@ export const sections: CvSection[] = [
         "org": "University of Ottawa",
         "dates": "Sep 2024 – May 2025",
         "bullets": []
-      },
+      }
+    ]
+  },
+  {
+    "heading": "",
+    "blocks": [
       {
         "kind": "prose",
-        "html": "Fortinet NSE 1–3 (2026) · Full driving licence"
+        "html": "Fortinet NSE 1–3 (2026) · Full driving licence · CTYI"
       }
     ]
   }

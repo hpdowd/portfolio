@@ -77,7 +77,7 @@ availability from `/api/uptime`.
 │   │   ├── components/     Home.astro + PageNav.astro (shared subpage nav)
 │   │   ├── content/        writing collection (Markdown homelab notes) + content.config.ts
 │   │   └── data/           site.ts (Person/WebSite JSON-LD + social links); cv.ts (generated CV data)
-│   ├── cv/                 primary_cv.tex — single source for the CV; extract.mjs → src/data/cv.ts
+│   ├── cv/                 resume.tex — single source for the CV; extract.mjs → src/data/cv.ts
 │   ├── public/             favicon, home.js + status.js (live wiring) + lib.js (shared helpers), resume.pdf (compiled from cv/), robots.txt, og-image.png
 │   └── dist/               build output — embedded into the binary (git-ignored)
 ├── docs/design.md          design rationale: anti-AI-aesthetic research + decisions
@@ -207,7 +207,7 @@ Static and dependency-free — generated at build time, no `@astrojs/*` packages
 
 ## CV: one source, two outputs
 
-`web/cv/primary_cv.tex` is the **single source of truth** for the CV. The
+`web/cv/resume.tex` is the **single source of truth** for the CV. The
 downloadable PDF and the `/cv` page are both generated from it, so they cannot
 drift:
 
@@ -228,7 +228,7 @@ npm run cv:build   # both
 `src/data/cv.ts` is **committed**, so the production `astro build` just imports
 it and never needs `unified-latex` (a dev-dependency). Regeneration is wired to
 a git hook — `git config core.hooksPath .githooks` once per clone, then any
-commit that touches `primary_cv.tex` rebuilds `cv.ts` + `resume.pdf` and stages
+commit that touches `resume.tex` rebuilds `cv.ts` + `resume.pdf` and stages
 them (needs `node` + `pdflatex`).
 
 > **Web-only detail (`%%WEB`).** A one-page PDF and a web page want different

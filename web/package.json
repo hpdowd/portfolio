@@ -8,7 +8,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "cv:data": "node cv/extract.mjs",
-    "cv:pdf": "cd cv && pdflatex -interaction=nonstopmode -halt-on-error primary_cv.tex && pdflatex -interaction=nonstopmode -halt-on-error primary_cv.tex && cp primary_cv.pdf ../public/resume.pdf",
+    "cv:pdf": "cd cv && pdflatex -interaction=nonstopmode -halt-on-error resume.tex && pdflatex -interaction=nonstopmode -halt-on-error resume.tex && cp resume.pdf ../public/resume.pdf",
     "cv:build": "npm run cv:data && npm run cv:pdf",
     "postbuild": "node -e \"const fs=require('fs');fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/.gitkeep','')\"",
     "preview": "astro preview",
