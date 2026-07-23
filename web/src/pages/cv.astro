@@ -40,7 +40,7 @@ const cvPersonLd = personLd();
 
     {sections.map((sec) => (
       <section class="cv__sec">
-        <h2>{sec.heading}</h2>
+        {sec.heading && <h2>{sec.heading}</h2>}
         {sec.blocks.map((block) =>
           block.kind === 'skills' ? (
             <dl class="cv__skills">

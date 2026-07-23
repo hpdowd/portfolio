@@ -57,8 +57,12 @@ function preprocess(tex) {
     .replace(/\\enspace\\textperiodcentered\\enspace/g, ' · ')
     .replace(/\\textperiodcentered/g, '·')
     .replace(/\\enspace/g, ' ')
-    .replace(/\\noindent/g, '')
+    // Layout-only macros that shape the PDF but carry no page content. \rule
+    // takes two brace args (a horizontal separator); the rest are spacing.
+    .replace(/\\rule\*?\{[^}]*\}\{[^}]*\}/g, '')
+    .replace(/\\noindent\b/g, '')
     .replace(/\\vspace\*?\{[^}]*\}/g, '')
+    .replace(/\\(par|hfill|hrule|smallskip|medskip|bigskip|newpage)\b/g, ' ')
     .replace(/\\LaTeX(\{\})?/g, 'LaTeX');
 }
 
@@ -81,6 +85,12 @@ function toHtml(nodes) {
     .replace(new RegExp(AMP, 'g'), '&amp;')
     .replace(/\s+/g, ' ')
     .trim();
+  // Safety net: an unhandled macro leaks unified-latex's debug markup into the
+  // page. Fail loudly so it is fixed (strip it above) rather than shipped.
+  if (/class="(macro macro-|argument)/.test(h)) {
+    throw new Error(`extract: unhandled LaTeX macro leaked into output:\n  ${h}`);
+  }
+  return h;
 }
 function toText(nodes) {
   return toHtml(nodes).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim();
