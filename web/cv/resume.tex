@@ -1,11 +1,8 @@
-% Henry Dowd — CV (infrastructure / SRE / DevOps / platform)
-% Compile: pdflatex resume.tex   (run twice, for hyperlinks)
-%
-% Single-purpose base. The old master/infra/swml/grad variant selector has been
-% removed — the target is infrastructure / SRE / DevOps / platform only, so the
-% cross-discipline variants were dead weight and cluttered the file. Content is
-% inline in the body. For a per-application copy: duplicate this file to
-% cv_<company>.tex and edit the Profile / Skills / project order directly.
+% Henry Dowd — CV (infrastructure / SRE / DevOps / platform).
+% Single source for both the downloadable PDF and the /cv page (see README,
+% "CV: one source, two outputs"). Compile the PDF with:
+%   pdflatex resume.tex   (run twice, for hyperlinks)
+% A line marked %%WEB is a comment here but shows on the web page only.
 
 \documentclass[a4paper,10pt]{article}
 
@@ -17,7 +14,6 @@
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage{hyperref}
-\usepackage{ifthen}
 \usepackage{xcolor}
 
 \definecolor{linkblue}{HTML}{0563C1}
@@ -31,11 +27,10 @@
 \newlist{cvitems}{itemize}{1}
 \setlist[cvitems]{label=\textbullet, leftmargin=14pt, itemsep=1pt, parsep=0pt, topsep=2pt}
 
-\newcommand{\cventry}[3]{\vspace{3pt}\noindent\textbf{#1}\ifthenelse{\equal{#2}{}}{}{\enspace\textperiodcentered\enspace #2}\hfill{\small\textit{\color{datesgrey}#3}}\par\vspace{1pt}}
+\newcommand{\cventry}[3]{\vspace{3pt}\noindent\textbf{#1}\enspace\textperiodcentered\enspace #2\hfill{\small\textit{\color{datesgrey}#3}}\par\vspace{1pt}}
 \newcommand{\cvsubtitle}[1]{{\small\textit{\color{datesgrey}#1}\par\vspace{1pt}}}
 \newcommand{\skillsline}[2]{\noindent\textbf{#1}\enspace\enspace #2\par\vspace{1pt}}
 
-% ============================================================
 \begin{document}
 
 \begin{center}
