@@ -76,8 +76,9 @@ availability from `/api/uptime`.
 │   ├── src/                Base layout, cv/about/status/homelab (+ homelab/notes)/404 pages, sitemap + rss endpoints, global styles
 │   │   ├── components/     Home.astro + PageNav.astro (shared subpage nav)
 │   │   ├── content/        writing collection (Markdown homelab notes) + content.config.ts
-│   │   └── data/           site.ts — single source for Person/WebSite JSON-LD + social links
-│   ├── public/             favicon, home.js + status.js (live wiring) + lib.js (shared helpers), resume.pdf, robots.txt, og-image.png
+│   │   └── data/           site.ts (Person/WebSite JSON-LD + social links); cv.ts (generated CV data)
+│   ├── cv/                 primary_cv.tex — single source for the CV; extract.mjs → src/data/cv.ts
+│   ├── public/             favicon, home.js + status.js (live wiring) + lib.js (shared helpers), resume.pdf (compiled from cv/), robots.txt, og-image.png
 │   └── dist/               build output — embedded into the binary (git-ignored)
 ├── docs/design.md          design rationale: anti-AI-aesthetic research + decisions
 ├── Dockerfile              3-stage: build site → build binary → distroless
@@ -204,19 +205,36 @@ Static and dependency-free — generated at build time, no `@astrojs/*` packages
 - **Branded 404** — `src/pages/404.astro`, served with a real `404` status by the
   Go static handler (`web.go`) for any unknown path.
 
-> **Note — two CVs, update both.** `web/public/resume.pdf` (the downloadable)
-> and the `/cv` page (`src/pages/cv.astro`) are independent sources of truth.
-> Neither is generated from the other, so when you edit one you must edit the
-> other by hand or they will drift. The PDF in particular is **not** built by
-> CI: it is authored and exported manually elsewhere and committed as a binary,
-> so a change to `cv.astro` will not touch it. After editing the page, re-export
-> `resume.pdf` to match and commit it in the same change.
->
-> _Future improvement:_ keep the résumé as a checked-in LaTeX (`.tex`) source and
-> generate `resume.pdf` from it — a build step (or a git hook / CI job running
-> `tectonic`/`latexmk`) would then rebuild the PDF whenever the source changes,
-> removing the manual export. This still leaves two sources to reconcile against
-> `cv.astro`, but the PDF itself would no longer be a hand-produced binary.
+## CV: one source, two outputs
+
+`web/cv/primary_cv.tex` is the **single source of truth** for the CV. The
+downloadable PDF and the `/cv` page are both generated from it, so they cannot
+drift:
+
+- **PDF** — `pdflatex` compiles the `.tex` to `web/public/resume.pdf` (the
+  "Download PDF" link). Nothing to hand-edit.
+- **Page** — `web/cv/extract.mjs` parses the `.tex` with
+  [`unified-latex`](https://github.com/siefkenj/unified-latex) into typed,
+  structured data at `src/data/cv.ts`, and `src/pages/cv.astro` renders it. The
+  page's masthead (name + contact) is decorative and stays hand-authored; only
+  the sections come from the `.tex`.
+
+```
+npm run cv:data    # .tex → src/data/cv.ts (page data)
+npm run cv:pdf     # .tex → public/resume.pdf (pdflatex, twice for hyperlinks)
+npm run cv:build   # both
+```
+
+`src/data/cv.ts` is **committed**, so the production `astro build` just imports
+it and never needs `unified-latex` (a dev-dependency). Regeneration is wired to
+a git hook — `git config core.hooksPath .githooks` once per clone, then any
+commit that touches `primary_cv.tex` rebuilds `cv.ts` + `resume.pdf` and stages
+them (needs `node` + `pdflatex`).
+
+> **Web-only detail (`%%WEB`).** A one-page PDF and a web page want different
+> amounts of detail. A line in the `.tex` beginning `%%WEB ` is a LaTeX comment
+> (so `pdflatex` ignores it) that the extractor promotes to live content — it
+> appears on the page but not the PDF. The Relevant-modules line uses this.
 
 ## Build & deploy (CI/CD)
 

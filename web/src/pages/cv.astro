@@ -1,21 +1,16 @@
 ---
 /**
- * CV — real content, sourced from primary_cv.tex (infra variant). Same type
- * system as the home: serif headings, mono labels/dates, sans body, hairline
- * section rules, one gruvbox accent. A downloadable PDF can live at
- * web/public/resume.pdf and be linked from the header once added.
+ * CV — body content generated from web/cv/primary_cv.tex (the same source the
+ * downloadable resume.pdf is compiled from), via `npm run cv:data` into
+ * src/data/cv.ts. Edit the .tex, not this page, for anything in the sections
+ * below; the masthead (name + contact) is decorative and stays here. Type
+ * system matches the home: serif headings, mono labels/dates, sans body,
+ * hairline section rules, one gruvbox accent.
  */
 import Base from '../layouts/Base.astro';
 import PageNav from '../components/PageNav.astro';
 import { personLd } from '../data/site';
-
-const skills: [string, string][] = [
-  ['Containers & GitOps', 'Kubernetes (k3s), Docker, Helm, ArgoCD, Longhorn, MetalLB, Traefik, Sealed Secrets'],
-  ['Linux & Virtualisation', 'Arch Linux, Proxmox VE, LXC, ZFS, systemd, shell scripting, SSH key management'],
-  ['Networking', 'TCP/IP, DNS (split-horizon), DHCP, WireGuard, Cloudflare Tunnels, reverse proxies / ingress, SSL/TLS'],
-  ['Observability & Backup', 'VictoriaMetrics, Grafana, Alertmanager, restic, Backblaze B2'],
-  ['Languages & Tools', 'Python, Java, C, Bash, SQL; Git, Gitea, Let’s Encrypt, Technitium DNS, LaTeX'],
-];
+import { sections } from '../data/cv';
 
 // JSON-LD Person, emitted on the CV for rich-result eligibility. Built from the
 // shared identity source (src/data/site.ts), same node as the home @graph.
@@ -43,104 +38,36 @@ const cvPersonLd = personLd();
       </p>
     </header>
 
-    <section class="cv__sec">
-      <h2>Profile</h2>
-      <p>
-        BSc in Pure Mathematics &amp; Computer Science from Maynooth University,
-        with a year abroad at the University of Ottawa. I run a
-        two-node k3s cluster on a single Proxmox host, built up from individual components
-        and managed entirely through GitOps: ArgoCD reconciles the cluster against a git
-        repository, with Sealed Secrets, Longhorn storage, MetalLB, and Traefik ingress.
-        Comfortable with Linux administration, networking, storage, and container
-        orchestration, and I document architectural decisions and incidents as I go.
-        Targeting graduate roles in infrastructure engineering, systems, and SRE.
-      </p>
-    </section>
-
-    <section class="cv__sec">
-      <h2>Technical Skills</h2>
-      <dl class="cv__skills">
-        {skills.map(([k, v]) => (
-          <div><dt>{k}</dt><dd>{v}</dd></div>
-        ))}
-      </dl>
-    </section>
-
-    <section class="cv__sec">
-      <h2>Projects</h2>
-
-      <div class="cv__entry">
-        <div class="cv__entryhead">
-          <h3>Self-Hosted Infrastructure &amp; Home Lab <span class="cv__org">· Personal</span></h3>
-          <span class="cv__dates">2024 – Present</span>
-        </div>
-        <ul>
-          <li>Run a two-node k3s cluster on a single Proxmox host, hosting around a dozen services (Nextcloud, Immich, Gitea, and this site among them), managed end to end with GitOps: ArgoCD reconciles the cluster against a git repository using the app-of-apps pattern, so the repo is the single source of truth. <a href="https://github.com/hpdowd/homelab" target="_blank" rel="noopener">github.com/hpdowd/homelab</a></li>
-          <li>Built the platform from individual components: MetalLB for load balancing, Traefik for ingress, Longhorn for replicated storage, and Sealed Secrets to keep encrypted credentials in git.</li>
-          <li>Expose services publicly through a Cloudflare Tunnel, so no inbound port is forwarded for any of them, and resolve the same hostnames internally with split-horizon DNS (Technitium) so LAN traffic stays in-house.</li>
-          <li>Added a VictoriaMetrics, Grafana, and Alertmanager stack for metrics and alerting, with 30 days of metrics retention and nightly offsite restic backups to Backblaze B2 (24-hour RPO); documented decisions as ADRs and incidents as post-mortems.</li>
-        </ul>
-      </div>
-
-      <div class="cv__entry">
-        <div class="cv__entryhead">
-          <h3>Final Year Project — Paraphrase Detection <span class="cv__org">· Maynooth University</span></h3>
-          <span class="cv__dates">2025 – 2026</span>
-        </div>
-        <ul>
-          <li>Built a dual-branch classifier fusing BERT cosine similarity, Zhang–Shasha tree edit distance, Jaccard overlap, and length ratio; evaluated on the MSRP corpus. <a href="https://github.com/hpdowd/paraphrase_detector" target="_blank" rel="noopener">github.com/hpdowd/paraphrase_detector</a></li>
-          <li>Implemented in Python with HuggingFace Transformers, PyTorch, and scikit-learn.</li>
-          <li>Performed error analysis comparing structural vs. semantic methods, with confusion matrices, score distributions, and parse-tree examples of failure modes.</li>
-        </ul>
-      </div>
-
-      <div class="cv__entry">
-        <div class="cv__entryhead">
-          <h3>PDF-Sorter — Workplace Automation Tool <span class="cv__org">· Python</span></h3>
-          <span class="cv__dates">2025</span>
-        </div>
-        <ul>
-          <li>Regex-based tool to auto-sort and rename PDFs by filename and content metadata, with OCR fallback; built and deployed during an HR placement at Roscommon County Council. <a href="https://github.com/hpdowd/PDF-Sorter" target="_blank" rel="noopener">github.com/hpdowd/PDF-Sorter</a></li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="cv__sec">
-      <h2>Experience</h2>
-      <div class="cv__entry">
-        <div class="cv__entryhead">
-          <h3>Summer Student — Human Resources <span class="cv__org">· Roscommon County Council</span></h3>
-          <span class="cv__dates">Jun – Sep 2025</span>
-        </div>
-        <ul>
-          <li>Handled data entry, records management, and financial processing across employee files and payroll-adjacent administration.</li>
-          <li>Identified a repetitive document-sorting bottleneck and built a custom Python tool (PDF-Sorter) to automate the workflow.</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="cv__sec">
-      <h2>Education</h2>
-      <div class="cv__entry">
-        <div class="cv__entryhead">
-          <h3>BSc Computational Thinking <span class="cv__org">· Maynooth University</span></h3>
-          <span class="cv__dates">Sep 2022 – May 2026</span>
-        </div>
-        <p class="cv__sub">Pure Mathematics &amp; Computer Science</p>
-        <p><strong>Relevant modules:</strong> Operating Systems, Communications &amp; Concurrency; Algorithms &amp; Data Structures; Programming Languages &amp; Compilers; Theory of Computation; Software Verification.</p>
-      </div>
-      <div class="cv__entry">
-        <div class="cv__entryhead">
-          <h3>Study Abroad <span class="cv__org">· University of Ottawa</span></h3>
-          <span class="cv__dates">Sep 2024 – May 2025</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="cv__sec">
-      <h2>Certifications &amp; Additional</h2>
-      <p>Fortinet NSE 1–3 (2026) · Full driving licence</p>
-    </section>
+    {sections.map((sec) => (
+      <section class="cv__sec">
+        <h2>{sec.heading}</h2>
+        {sec.blocks.map((block) =>
+          block.kind === 'skills' ? (
+            <dl class="cv__skills">
+              {block.rows.map((row) => (
+                <div><dt>{row.label}</dt><dd set:html={row.items} /></div>
+              ))}
+            </dl>
+          ) : block.kind === 'entry' ? (
+            <div class="cv__entry">
+              <div class="cv__entryhead">
+                <h3>
+                  <Fragment set:html={block.title} />
+                  {block.org && <span class="cv__org"> · {block.org}</span>}
+                </h3>
+                <span class="cv__dates">{block.dates}</span>
+              </div>
+              {block.subtitle && <p class="cv__sub">{block.subtitle}</p>}
+              {block.bullets.length > 0 && (
+                <ul>{block.bullets.map((b) => <li set:html={b} />)}</ul>
+              )}
+            </div>
+          ) : (
+            <p class="cv__prose" set:html={block.html} />
+          )
+        )}
+      </section>
+    ))}
   </article>
 </Base>
 
@@ -182,6 +109,9 @@ const cvPersonLd = personLd();
   .cv__org { font-family: var(--mono); font-size: 0.82rem; font-weight: 400; color: var(--ink-soft); }
   .cv__dates { font-family: var(--mono); font-size: 0.78rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .cv__sub { font-family: var(--mono); font-size: 0.82rem; color: var(--ink-soft); margin: 0 0 0.5rem; }
+  /* Loose prose block (e.g. the Profile paragraph, the web-only modules line). */
+  .cv__prose { line-height: 1.62; margin: 0.6rem 0 0; }
+  .cv__prose:first-of-type { margin-top: 0; }
 
   .cv__entry ul { margin: 0.4rem 0 0; padding-left: 1.15rem; }
   .cv__entry li { margin-bottom: 0.45rem; line-height: 1.55; }

@@ -1,0 +1,17 @@
+#!/bin/sh
+# Keep the CV outputs in lockstep with their single source. When
+# web/cv/primary_cv.tex is part of a commit, regenerate the page data
+# (src/data/cv.ts) and the downloadable PDF (public/resume.pdf) and stage them,
+# so the .tex, the page, and the PDF can never be committed out of sync.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+# Needs node + pdflatex on PATH (same tools `npm run cv:build` uses).
+
+if git diff --cached --name-only | grep -q '^web/cv/primary_cv\.tex$'; then
+  echo "pre-commit: primary_cv.tex changed — regenerating CV data + PDF…"
+  ( cd web && npm run --silent cv:build ) || {
+    echo "pre-commit: cv:build failed; aborting commit." >&2
+    exit 1
+  }
+  git add web/src/data/cv.ts web/public/resume.pdf
+fi

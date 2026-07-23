@@ -7,11 +7,20 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "cv:data": "node cv/extract.mjs",
+    "cv:pdf": "cd cv && pdflatex -interaction=nonstopmode -halt-on-error primary_cv.tex && pdflatex -interaction=nonstopmode -halt-on-error primary_cv.tex && cp primary_cv.pdf ../public/resume.pdf",
+    "cv:build": "npm run cv:data && npm run cv:pdf",
     "postbuild": "node -e \"const fs=require('fs');fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/.gitkeep','')\"",
     "preview": "astro preview",
     "check": "astro check"
   },
   "dependencies": {
     "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "@unified-latex/unified-latex-to-hast": "^1.8.4",
+    "@unified-latex/unified-latex-util-parse": "^1.8.4",
+    "rehype-stringify": "^10.0.1",
+    "unified": "^11.0.5"
   }
 }

@@ -11,6 +11,17 @@ node_modules/
 /web/dist/*
 !/web/dist/.gitkeep
 
+# LaTeX build artifacts from the CV source (web/cv/primary_cv.tex). The source
+# .tex is tracked; the compiled PDF is published as web/public/resume.pdf (also
+# tracked), so the intermediate PDF and aux files here are throwaway.
+/web/cv/*.aux
+/web/cv/*.log
+/web/cv/*.out
+/web/cv/*.fls
+/web/cv/*.fdb_latexmk
+/web/cv/*.synctex.gz
+/web/cv/primary_cv.pdf
+
 # Go build artifacts
 /portfolio
 /out/

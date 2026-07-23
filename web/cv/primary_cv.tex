@@ -1,0 +1,109 @@
+% Henry Dowd — CV (infrastructure / SRE / DevOps / platform)
+% Compile: pdflatex primary_cv.tex   (run twice, for hyperlinks)
+%
+% Single-purpose base. The old master/infra/swml/grad variant selector has been
+% removed — the target is infrastructure / SRE / DevOps / platform only, so the
+% cross-discipline variants were dead weight and cluttered the file. Content is
+% inline in the body. For a per-application copy: duplicate this file to
+% cv_<company>.tex and edit the Profile / Skills / project order directly.
+
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage[top=0.5in, bottom=0.5in, left=0.75in, right=0.75in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{ifthen}
+\usepackage{xcolor}
+
+\definecolor{linkblue}{HTML}{0563C1}
+\definecolor{datesgrey}{HTML}{595959}
+\hypersetup{colorlinks=true, urlcolor=linkblue, pdfauthor={Henry Dowd}, pdftitle={Henry Dowd -- CV}}
+\pagestyle{empty}
+
+\titleformat{\section}{\vspace{4pt}\bfseries\normalsize\MakeUppercase}{}{0pt}{}[\vspace{-6pt}\rule{\textwidth}{0.5pt}]
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+
+\newlist{cvitems}{itemize}{1}
+\setlist[cvitems]{label=\textbullet, leftmargin=14pt, itemsep=1pt, parsep=0pt, topsep=2pt}
+
+\newcommand{\cventry}[3]{\vspace{3pt}\noindent\textbf{#1}\ifthenelse{\equal{#2}{}}{}{\enspace\textperiodcentered\enspace #2}\hfill{\small\textit{\color{datesgrey}#3}}\par\vspace{1pt}}
+\newcommand{\cvsubtitle}[1]{{\small\textit{\color{datesgrey}#1}\par\vspace{1pt}}}
+\newcommand{\skillsline}[2]{\noindent\textbf{#1}\enspace\enspace #2\par\vspace{1pt}}
+
+% ============================================================
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries HENRY DOWD}\\\vspace{4pt}
+  Ireland\enspace\textperiodcentered\enspace+353 83 032 1641\enspace\textperiodcentered\enspace
+  \href{mailto:henry@dowd.ie}{henry@dowd.ie}\\
+  \href{https://www.linkedin.com/in/henrypdowd/}{linkedin.com/in/henrypdowd}%
+  \enspace\textperiodcentered\enspace
+  \href{https://github.com/hpdowd}{github.com/hpdowd}%
+  \enspace\textperiodcentered\enspace
+  \href{https://henrydowd.dev}{henrydowd.dev}
+\end{center}
+
+\section{Profile}
+BSc in Pure Mathematics \& Computer Science, Maynooth University, completed May 2026, with a year abroad at the University of Ottawa. Run a two-node k3s cluster on a single Proxmox host, administering the stack from physical hardware and virtualisation up to GitOps-managed Kubernetes, with CI/CD, monitoring, and alerting built in. Comfortable with Linux administration, networking, and Python scripting, and troubleshoot my own infrastructure when it breaks. Targeting roles in platform engineering, site reliability, DevOps, and low-level infrastructure.
+
+\section{Technical Skills}
+\skillsline{Linux \& Virtualisation}{Arch Linux, Proxmox VE, LXC, ZFS, systemd, shell scripting, SSH key management}
+\skillsline{Networking}{TCP/IP, DNS (split-horizon), DHCP, WireGuard, Cloudflare Tunnels, reverse proxies / ingress, SSL/TLS}
+\skillsline{Containers \& CI/CD}{Kubernetes (k3s), Docker, Helm, ArgoCD (GitOps), GitHub Actions, MetalLB, Traefik, Longhorn}
+\skillsline{Observability \& Backup}{VictoriaMetrics, Grafana, Alertmanager, restic, Backblaze B2}
+\skillsline{Scripting \& Tools}{Python, Bash, Java, C, SQL; Git, Gitea, cert-manager (Let's Encrypt), Technitium DNS, \LaTeX}
+
+\section{Projects}
+\cventry{Self-Hosted Infrastructure \& Home Lab}{Personal}{2024 -- Present}
+\begin{cvitems}
+  \item Two-node k3s cluster on single Proxmox host, GitOps via ArgoCD app-of-apps pattern, git repo as single source of truth.
+  \item Platform assembled from components: MetalLB load balancing, Traefik ingress, Longhorn persistent block storage (replica=1, deliberate single-worker tradeoff), Sealed Secrets for encrypted credentials in git.
+  \item CI/CD end-to-end: GitHub Actions builds, pushes to GHCR, updates SHA-pinned manifest, ArgoCD reconciles; in-cluster runner lints manifests.
+  \item Public ingress via Cloudflare Tunnel (no inbound ports open), split-horizon DNS via Technitium, wildcard TLS via cert-manager and Let's Encrypt DNS-01.
+  \item Observability stack VictoriaMetrics, Grafana, Alertmanager with \texttt{absent()} guards so a dead scrape self-alerts; encrypted offsite restic backups to Backblaze B2, quarterly verified restores.
+  \item Diagnosed intermittent e1000e (Intel I219-LM) NIC transmit hangs across ethtool offload settings, modprobe driver parameters, and GRUB \texttt{pcie\_aspm=off} — layered isolation separating configuration from firmware.
+  \item Decisions documented as ADRs, incidents as post-mortems. \href{https://github.com/hpdowd/homelab}{github.com/hpdowd/homelab}
+\end{cvitems}
+
+\cventry{Final Year Project --- Paraphrase Detection}{Maynooth University}{2025 -- 2026}
+\begin{cvitems}
+  \item Built a dual-branch classifier fusing BERT cosine similarity, Zhang--Shasha tree edit distance, Jaccard overlap, and length ratio; evaluated on the MSRP corpus in Python with HuggingFace Transformers, PyTorch, and scikit-learn.
+  \item Performed error analysis comparing structural vs.\ semantic methods, with confusion matrices, score distributions, and parse-tree examples of failure modes.
+  \href{https://github.com/hpdowd/paraphrase_detector}{github.com/hpdowd/paraphrase\_detector}
+\end{cvitems}
+
+\cventry{PDF-Sorter --- Workplace Automation Tool}{Python}{2025}
+\begin{cvitems}
+  \item Regex-based tool to auto-sort and rename PDFs by filename and content metadata, with OCR fallback; deployed during HR placement at Roscommon County Council.
+  \href{https://github.com/hpdowd/PDF-Sorter}{github.com/hpdowd/PDF-Sorter}
+\end{cvitems}
+
+\section{Experience}
+\cventry{Summer Student --- Human Resources}{Roscommon County Council}{Jun -- Sep 2025}
+\begin{cvitems}
+  \item Data entry, records management, and financial processing across employee files and payroll-adjacent administration.
+  \item Identified a repetitive document-sorting bottleneck and built a custom Python tool to automate the workflow.
+\end{cvitems}
+
+\section{Education \& Certifications}
+\cventry{BSc Computational Thinking}{Maynooth University}{Sep 2022 -- May 2026}
+\cvsubtitle{Pure Mathematics \& Computer Science}
+
+% Relevant-modules line. Marked %%WEB: the extractor emits it to the web page,
+% but LaTeX still sees a comment, so it stays off the one-page PDF. Drop the
+% %%WEB prefix (making it live LaTeX) to also put it on the PDF.
+%%WEB \textbf{Relevant modules:} Operating Systems, Communications \& Concurrency; Algorithms \& Data Structures; Software Verification; Programming Languages \& Compilers; Machine Learning \& Neural Networks.
+
+\vspace{4pt}
+\cventry{Study Abroad}{University of Ottawa}{Sep 2024 -- May 2025}
+\vspace{2pt}
+\noindent Fortinet NSE 1--3 (2026)\enspace\textperiodcentered\enspace
+Full driving licence
+
+\end{document}
