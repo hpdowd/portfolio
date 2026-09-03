@@ -66,6 +66,8 @@ var serviceMatchers = []struct {
 	{"collabora", []string{"collabora"}},
 	{"kiwix", []string{"kiwix"}},
 	{"file-parser", []string{"file-parser", "fileparser"}},
+	{"authelia", []string{"authelia"}},
+	{"paperless", []string{"paperless"}},
 }
 
 // curateServices folds raw job→up pairs into the canonical name→up map exposed

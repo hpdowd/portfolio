@@ -5,7 +5,7 @@
  * src/data/cv.ts. Edit the .tex, not this page, for anything in the sections
  * below; the masthead (name + contact) is decorative and stays here. Type
  * system matches the home: serif headings, mono labels/dates, sans body,
- * hairline section rules, one gruvbox accent.
+ * hairline section rules, one reserved accent.
  */
 import Base from '../layouts/Base.astro';
 import PageNav from '../components/PageNav.astro';
@@ -20,7 +20,7 @@ const cvPersonLd = personLd();
 <Base
   wide
   title="CV — Henry Dowd"
-  description="Henry Dowd, BSc in Pure Mathematics & Computer Science from Maynooth University, targeting graduate infrastructure engineering / systems / SRE roles."
+  description="Henry Dowd, Production Engineer at Crusoe. Kubernetes, GitOps, observability, and a self-hosted homelab platform."
 >
   <script type="application/ld+json" is:inline set:html={JSON.stringify(cvPersonLd)} />
   <PageNav current="cv" />

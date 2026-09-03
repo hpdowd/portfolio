@@ -65,11 +65,12 @@ import { social } from '../data/site';
       <section id="intro" class="block">
         <h2 class="block__h">About</h2>
         <p class="lede">
-          I build software and then run it myself, on hardware I own. Most of it
-          lands on a small Kubernetes cluster at home, the same cluster that
-          serves this page and feeds the panel on the right. I'm drawn to the
-          unglamorous parts: deploys that don't wake you up, and monitoring that
-          notices a problem before a user does.
+          I'm a Production Engineer at Crusoe, working on the managed Kubernetes
+          and VM platforms. I also build software and then run it myself, on
+          hardware I own. Most of that lands on a small Kubernetes cluster at
+          home, the same cluster that serves this page and feeds the panel on the
+          right. I'm drawn to the unglamorous parts: deploys that don't wake you
+          up, and monitoring that notices a problem before a user does.
         </p>
       </section>
 
@@ -108,9 +109,12 @@ import { social } from '../data/site';
             fine-tuning a big model and treating it as a black box, I combined four
             features you can actually inspect into a logistic regression: BERT
             similarity, tree-edit distance over the parse, word overlap, and a
-            length ratio. On the MSR Paraphrase Corpus it edged out BERT on its own
-            (0.79 ROC AUC against 0.78), and each of the four features held up as
-            a significant signal in its own right.
+            length ratio. The aim was to compare structural methods against
+            semantic ones on the MSR Paraphrase Corpus. Fusing them reached 0.79
+            ROC AUC against 0.78 for BERT alone, a margin too small to draw a
+            conclusion from, so the useful output is the error analysis: confusion
+            matrices, score distributions, and parse-tree examples of where each
+            method fails.
           </p>
         </article>
 
@@ -150,6 +154,7 @@ import { social } from '../data/site';
         <dl class="skills">
           <div><dt>Linux &amp; bare metal</dt><dd>Arch Linux · Proxmox · ZFS · systemd</dd></div>
           <div><dt>Networking</dt><dd>TCP/IP · WireGuard · split-horizon DNS · reverse proxies</dd></div>
+          <div><dt>Identity &amp; access</dt><dd>Authelia · OIDC · ForwardAuth · Cloudflare Access</dd></div>
           <div><dt>Containers &amp; GitOps</dt><dd>Kubernetes · ArgoCD · Helm · Sealed Secrets</dd></div>
           <div><dt>Observability</dt><dd>VictoriaMetrics · Grafana · Alertmanager · restic</dd></div>
           <div><dt>Languages</dt><dd>C · Python · Java · Bash · SQL</dd></div>
@@ -198,7 +203,7 @@ import { social } from '../data/site';
       the whole path it takes, from the request arriving down to the disk it lands on.
     </p>
 
-    <figure class="v-nest-fig" role="group" aria-label="Homelab infrastructure as nested containment: the Proxmox host holds its hardware, the k3s control and worker VMs (which contain the k3s cluster of ingress, apps including this page, and platform services), and the WireGuard, Technitium and AMP LXCs alongside; public traffic enters via a Cloudflare tunnel and LAN traffic via Technitium DNS, and restic backs up off-site to Backblaze B2.">
+    <figure class="v-nest-fig" role="group" aria-label="Homelab infrastructure as nested containment: the Proxmox host holds its hardware, the k3s control and worker VMs (which contain the k3s cluster of ingress and single sign-on, apps including this page, and platform services), and the WireGuard, Technitium and AMP LXCs alongside; public traffic enters via a Cloudflare tunnel and LAN traffic via Technitium DNS, and restic backs up off-site to Backblaze B2.">
       <div class="v-nest">
         <div class="vn-sources">
           <div class="vn-src">
@@ -226,6 +231,7 @@ import { social } from '../data/site';
               <div class="vn-row">
                 <span class="row-lab">edge</span>
                 <span class="chip" data-target="traefik"><span class="chip__dot" hidden aria-hidden="true"></span>Traefik</span>
+                <span class="chip" data-target="authelia"><span class="chip__dot" hidden aria-hidden="true"></span>Authelia <i>SSO</i></span>
                 <span class="chip">MetalLB <i>.200</i></span>
                 <span class="chip">cert-manager</span>
               </div>
@@ -235,6 +241,7 @@ import { social } from '../data/site';
                 <span class="chip" data-target="nextcloud"><span class="chip__dot" hidden aria-hidden="true"></span>Nextcloud</span>
                 <span class="chip" data-target="immich"><span class="chip__dot" hidden aria-hidden="true"></span>Immich</span>
                 <span class="chip" data-target="collabora"><span class="chip__dot" hidden aria-hidden="true"></span>Collabora</span>
+                <span class="chip" data-target="paperless"><span class="chip__dot" hidden aria-hidden="true"></span>Paperless</span>
                 <span class="chip" data-target="kiwix"><span class="chip__dot" hidden aria-hidden="true"></span>Kiwix</span>
                 <span class="chip" data-target="file-parser"><span class="chip__dot" hidden aria-hidden="true"></span>File-Parser</span>
                 <span class="chip chip--here" data-target="portfolio"><span class="chip__dot" hidden aria-hidden="true"></span>Portfolio <i>this page</i></span>

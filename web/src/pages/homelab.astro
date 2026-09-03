@@ -2,7 +2,7 @@
 /**
  * Homelab — a deep dive on the flagship project: the self-hosted Kubernetes
  * platform that serves this site. Prose in Henry's own register (see
- * writing_style.md), tracing the system concretely; the live, interactive
+ * career-context.md, "Writing rules"), tracing the system concretely; the live, interactive
  * topology lives on the home page (#infra) and availability on /status.
  */
 import Base from '../layouts/Base.astro';
@@ -21,11 +21,12 @@ const stack: [string, string][] = [
   ['Host', 'Proxmox VE on an i5-14500T · 24 GB RAM · ZFS RAID-1 (2×2 TB)'],
   ['Cluster', 'Two-node k3s (control + worker VMs) on the single host'],
   ['Edge', 'Cloudflare Tunnel (no forwarded ports) · Traefik ingress · MetalLB · cert-manager'],
+  ['Identity', 'Authelia — ForwardAuth at the ingress, and the OIDC provider six of the apps log in against · Cloudflare Access on the sensitive hosts'],
   ['GitOps', 'ArgoCD (app-of-apps) reconciling a git repo · Sealed Secrets · Gitea'],
   ['Storage', 'ZFS RAID-1 mirror (redundancy at the block layer) · Longhorn volumes'],
-  ['Observability', 'VictoriaMetrics · Grafana · Alertmanager'],
+  ['Observability', 'VictoriaMetrics · Grafana · Alertmanager (alerts out over an SMTP relay)'],
   ['Backup', 'restic → Backblaze B2, nightly, off-site (encrypted)'],
-  ['Apps', 'Nextcloud · Immich · Collabora · Kiwix · Gitea · this site'],
+  ['Apps', 'Nextcloud · Immich · Collabora · Paperless · Kiwix · Gitea · a household dashboard · this site'],
 ];
 ---
 
@@ -51,7 +52,7 @@ const stack: [string, string][] = [
       <p class="lede">
         A two-node Kubernetes cluster that I run at home, on a single machine
         under my desk, and that I manage entirely from one git repository; it
-        hosts a dozen or so services my household genuinely uses, and it also
+        hosts a dozen or so services my household uses, and it also
         serves this very page, which is then scraped by the same monitoring the
         page reports on.
       </p>
@@ -87,7 +88,11 @@ const stack: [string, string][] = [
         do forward is for my own WireGuard VPN, so I can still get back in when the
         cluster is down. Inside the house the same names resolve locally through
         <a href="/homelab/notes/split-horizon-dns/">split-horizon DNS</a>, so LAN
-        traffic never leaves the building. Behind the ingress the services keep their
+        traffic never leaves the building. In front of the services that need it sits
+        Authelia, which Traefik calls before it forwards a request, and which doubles
+        as the OIDC provider six of the apps log in against. The LAN names stay
+        ungated on purpose, so a broken login never locks me out of the thing that
+        would fix it. Behind the ingress the services keep their
         state on Longhorn volumes, with the redundancy for those and for everything
         else on the box sitting underneath in a
         <a href="/homelab/notes/zfs-mirror/">ZFS mirror</a> rather than in replica
