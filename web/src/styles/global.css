@@ -10,19 +10,27 @@
  */
 
 :root {
-  /* Palette — Gruvbox light, neutralised: warm off-white paper (the yellow
-     pulled back), dark ink, earthy accents carry the Gruvbox character. */
-  --bg: #f6f2e9;
-  --surface: #ece6d9;
-  --ink: #3c3836;
-  --ink-soft: #6f645a;
-  --line: #d7ccba;
-  --accent: #3c6f50;
+  /* Palette — warm paper, cool accent.
+     The paper keeps the editorial character at roughly half the previous
+     yellow saturation, so it reads as paper rather than parchment. The accent
+     is a muted blue; it used to be forest green, which crowded --ok onto an
+     olive that was hard to tell from --warn at dot size, and nearly identical
+     to it under red-green colour deficiency. Moving the accent off green frees
+     the whole green/amber/red range for status. */
+  --bg: #faf7f2;
+  --surface: #f1ece3;
+  --ink: #33302b;
+  --ink-soft: #625b52;
+  --line: #cfc4b4;
+  --accent: #2c5f8a;
 
-  /* Status colours (Gruvbox, darkened to clear WCAG AA 4.5:1 on --surface) */
-  --ok: #6b670c;
-  --warn: #8c5b0f;
-  --err: #9d0006;
+  /* Status colours. Mostly dot/cell backgrounds (3:1 UI minimum against both
+     --bg and --surface); --warn is also body text on the draft banner, so it
+     clears 4.5:1. Separated by luminance as well as hue, so the triad stays
+     readable simulated for deuteranopia and protanopia. */
+  --ok: #2f7d4f;
+  --warn: #8e6d0b;
+  --err: #8c1420;
 
   /* Type system — one rule across every page: serif for headings + anything
      that should stand out, sans for readable body, mono for data/labels/dates. */
@@ -38,16 +46,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Gruvbox dark: warm charcoal (not near-black), cream ink, bright accents. */
-    --bg: #282828;
-    --surface: #32302f;
-    --ink: #ebdbb2;
-    --ink-soft: #a89984;
-    --line: #504945;
-    --accent: #8ec07c;
-    --ok: #b8bb26;
-    --warn: #fe8019;
-    --err: #fb4934;
+    /* Warm charcoal, warm off-white ink. The ink was a saturated cream, which
+       is heavy for body text at this size; this is the same warmth with the
+       yellow pulled out. Same status reasoning as above. */
+    --bg: #1e1c1a;
+    --surface: #2a2724;
+    --ink: #ece7df;
+    --ink-soft: #a49b91;
+    --line: #423d38;
+    --accent: #7fb3d9;
+    --ok: #86cc90;
+    --warn: #dfc04a;
+    --err: #e0574e;
   }
 }
 

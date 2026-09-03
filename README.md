@@ -175,7 +175,7 @@ parser, the Gitea commit curation, the metrics exposition format, the cache's
 stale-while-revalidate behaviour, and the security headers. CI runs the tests as
 a gate before the image is built.
 
-The front-end's visual direction (a Swiss/editorial, Gruvbox-themed layout that
+The front-end's visual direction (a Swiss/editorial, warm-paper layout that
 deliberately avoids the generic "AI-generated" aesthetic) is documented in
 [`docs/design.md`](docs/design.md).
 
